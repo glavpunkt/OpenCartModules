@@ -102,15 +102,12 @@ class ModelShippingGlavpunkt extends Model {
                   $title_text = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'];
                 if (isset($this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'])) {
                   $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'];
-                }else{
-                  $cost = 0;
                 }
               }else{
                 $title_text = $this->language->get('text_title');
                 $cost = 0;
               }
-
-              $this->session->data['reloaded'] = false;
+              //$this->session->data['reloaded'] = false;
 
             $quote_data['glavpunkt'] = array(
               'code' => 'glavpunkt.glavpunkt',
