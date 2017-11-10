@@ -41,6 +41,9 @@ class ControllerShippingGlavpunkt extends Controller {
         $data['text_no']             = $this->language->get('text_no');
         $data['text_edit']             = $this->language->get('text_edit');
 
+        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');
+        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');     
+
 
         $data['entry_status']        = $this->language->get('entry_status');
         $data['entry_sort_order']    = $this->language->get('entry_sort_order');
@@ -85,6 +88,12 @@ class ControllerShippingGlavpunkt extends Controller {
             $data['glavpunkt_status'] = $this->request->post['glavpunkt_status'];
         } else {
             $data['glavpunkt_status'] = $this->config->get('glavpunkt_status');
+        }
+
+        if (isset($this->request->post['glavpunktpoints_simple_status'])) {
+            $data['glavpunktpoints_simple_status'] = $this->request->post['glavpunktpoints_simple_status'];
+        } else {
+            $data['glavpunktpoints_simple_status'] = $this->config->get('glavpunktpoints_simple_status');
         }
 
         if (isset($this->request->post['glavpunkt_sort_order'])) {

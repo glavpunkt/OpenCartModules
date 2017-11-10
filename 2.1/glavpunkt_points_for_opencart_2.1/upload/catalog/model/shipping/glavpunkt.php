@@ -28,25 +28,17 @@ class ModelShippingGlavpunkt extends Model {
       }
 
       if ($status) {
-            if (strlen($this->config->get('glavpunkt_tarif_edit_code')) > 0) {
+            if ($this->config->get('glavpunkt_tarif_edit_code')) {
               $order   = array("&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;");
               $replace = array(" ", "<", ">", '"', "'");
               $userSettings = str_replace($order, $replace, $this->config->get('glavpunkt_tarif_edit_code'));
             }else{
-            	$userSettings = '';
+              $userSettings = '';
             }
 
             $data_for_widget = "{'defaultCity': '".$city."',".$this->config->get('glavpunkt_widget_data')."}";
-            $quote_text =  '<a id="glavpunkt_open_map"  href="#" onclick="glavpunkt.openMap(selectPunkt,'.$data_for_widget.'); return false;">'.$this->language->get('text_description'). '</a>';
-
-              if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true){
-                  $quote_text .= '<script type="text/javascript">$(function(){
-                    var inputGP = document.getElementById("glavpunkt.glavpunkt");
-                  $(inputGP).prop("checked", true);
-                });</script>';
-              }
-
-            $quote_text .= '<script type="text/javascript">
+            $quote_text = '<a id="glavpunkt_open_map"  href="#" onclick="glavpunkt.openMap(selectPunkt,'.$data_for_widget.'); return false;" style="color: #232323; font-size: 15px; font-weight: 600;" class="custom_style_for_glavpunkt">'.$this->language->get('text_description'). '</a>'.
+            '<script type="text/javascript">
             $(\'#button-shipping-method\').on(\'click\', function(e){
                 if ($("input:radio[value=\'glavpunkt.glavpunkt\']").is(\':checked\')){
                   if ($(\'#glavpunkt_content\').html() == \'\'){
@@ -82,9 +74,12 @@ class ModelShippingGlavpunkt extends Model {
                       data: {price:tarif, type:\'Главпункт - самовывоз\', info:punktInfo.name, address:punktInfo.address, phone:punktInfo.phone, work_time:punktInfo.work_time, city_to:punktInfo.city},
                       dataType: \'html\',
                       success: function(html) {
-                        $(\'#glavpunkt_open_map\').css({display: "inline-block", padding:"3px", border: "0"});
-                        location.reload();
+                        $(\'#glavpunkt_open_map\').css({display: "inline-block", padding:"3px", border: "0"});';
+                     
+                      if ($this->config->get('glavpunktpoints_simple_status') == 1) {// если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
+                        $quote_text .= 'reloadAll();';
                       }
+              $quote_text .= '}
                     });
                   } else if (data.result == \'error\') {
                     console.log(\'Ошибка подсчета тарифа\', data.message);
@@ -98,16 +93,19 @@ class ModelShippingGlavpunkt extends Model {
              </script> 
              <br><span id="glavpunkt_content"></span>';
 
+              $title_text = $this->language->get('text_title');
+              $cost = 0;
+
               if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true) {
+                if (isset($this->session->data['shipping_methods'])){
                   $title_text = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'];
+                }
+
                 if (isset($this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'])) {
                   $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'];
                 }
-              }else{
-                $title_text = $this->language->get('text_title');
-                $cost = 0;
               }
-              //$this->session->data['reloaded'] = false;
+              
 
             $quote_data['glavpunkt'] = array(
               'code' => 'glavpunkt.glavpunkt',

@@ -111,6 +111,22 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-2 control-label" >Наличие модуля Simple:</label>
+            <div class="col-sm-10">
+              <select name="glavpunktpoints_simple_status">
+              <?php if ($glavpunktpoints_simple_status) { ?>
+              <option value="1" selected="selected"><?=$simple_text_enabled?></option>
+              <option value="0"><?=$simple_text_disabled?></option>
+              <?php } else { ?>
+              <option value="1"><?=$simple_text_enabled?></option>
+              <option value="0" selected="selected"><?=$simple_text_disabled?></option>
+              <?php } ?>
+            </select>
+            </div>
+           <div class="col-sm-10">Укажите установлен ли на сайте модуль одностраничного оформления заказа Simple, данный папаметр повлияет на корректность работы модуля службы доставки Главпункт.</div>
+        </div>
+
+        <div class="form-group">
           <label class="col-sm-2 control-label" >Статус:</label>
           <div class="col-sm-10">
             <select name="glavpunkt_status">
