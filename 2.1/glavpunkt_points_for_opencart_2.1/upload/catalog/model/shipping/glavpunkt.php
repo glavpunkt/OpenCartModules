@@ -28,15 +28,25 @@ class ModelShippingGlavpunkt extends Model {
       }
 
       if ($status) {
-            if ($this->config->get('glavpunkt_tarif_edit_code')) {
+            if (strlen($this->config->get('glavpunkt_tarif_edit_code')) > 0) {
               $order   = array("&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;");
               $replace = array(" ", "<", ">", '"', "'");
               $userSettings = str_replace($order, $replace, $this->config->get('glavpunkt_tarif_edit_code'));
+            }else{
+            	$userSettings = '';
             }
 
             $data_for_widget = "{'defaultCity': '".$city."',".$this->config->get('glavpunkt_widget_data')."}";
-            $quote_text =  ' <a id="glavpunkt_open_map"  href="#" onclick="glavpunkt.openMap(selectPunkt,'.$data_for_widget.'); return false;">'.$this->language->get('text_description'). '</a>'.
-            '<script type="text/javascript">
+            $quote_text =  '<a id="glavpunkt_open_map"  href="#" onclick="glavpunkt.openMap(selectPunkt,'.$data_for_widget.'); return false;">'.$this->language->get('text_description'). '</a>';
+
+              if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true){
+                  $quote_text .= '<script type="text/javascript">$(function(){
+                    var inputGP = document.getElementById("glavpunkt.glavpunkt");
+                  $(inputGP).prop("checked", true);
+                });</script>';
+              }
+
+            $quote_text .= '<script type="text/javascript">
             $(\'#button-shipping-method\').on(\'click\', function(e){
                 if ($("input:radio[value=\'glavpunkt.glavpunkt\']").is(\':checked\')){
                   if ($(\'#glavpunkt_content\').html() == \'\'){
@@ -73,7 +83,7 @@ class ModelShippingGlavpunkt extends Model {
                       dataType: \'html\',
                       success: function(html) {
                         $(\'#glavpunkt_open_map\').css({display: "inline-block", padding:"3px", border: "0"});
-                        location.reload();          
+                        location.reload();
                       }
                     });
                   } else if (data.result == \'error\') {
