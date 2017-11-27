@@ -40,6 +40,19 @@ class ModelExtensionShippingGlavpunkt extends Model
             $quote_text = '<a id="glavpunkt_open_map"  href="#" onclick="glavpunkt.openMap(selectPunkt,'.$data_for_widget.'); return false;" style="color: #232323; font-size: 15px; font-weight: 600;" class="custom_style_for_glavpunkt">'.$this->language->get('text_description'). '</a>';
 
             $quote_text .= '<script type="text/javascript">
+              var script = document.createElement(\'script\');
+
+              script.type = \'text/javascript\';
+              script.src = \'https://glavpunkt.ru/js/punkts-widget/glavpunkt.js\';
+              document.head.appendChild(script);
+
+              var style = document.createElement(\'style\');
+              style.type = \'text/css\';
+              style.innerHTML = \'.glavpunkt_container{ z-index:2000!important; }\';
+              document.head.appendChild(style);glavpunkt_content
+              </script>';
+
+            $quote_text .= '<script type="text/javascript">
             $(\'#button-shipping-method\').on(\'click\', function(e){
                 if ($("input:radio[value=\'glavpunkt.glavpunkt\']").is(\':checked\')){
                   if ($(\'#glavpunkt_content\').html() == \'\'){
@@ -48,9 +61,8 @@ class ModelExtensionShippingGlavpunkt extends Model
                   }
                 }
               }
+            );
 
-            
-          );
               function selectPunkt(punktInfo) { 
                 //$("input:radio[value=\'glavpunkt.glavpunkt\']").prop("checked", true);
                 var name = punktInfo.name;
@@ -84,7 +96,6 @@ class ModelExtensionShippingGlavpunkt extends Model
                             $quote_text .= '
                             reloadAll();
                             ';
-                            
                           }
                       $quote_text .= '}
                     });
