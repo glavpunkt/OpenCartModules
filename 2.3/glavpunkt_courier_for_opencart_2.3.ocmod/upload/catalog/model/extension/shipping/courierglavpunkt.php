@@ -63,6 +63,13 @@ class ModelExtensionShippingCourierglavpunkt extends Model
       if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true) {
         $selectCities .= '<script> $(function(){$(\'#courierglavpunkt.courierglavpunkt\').siblings("input").prop( "checked", true);});</script>';
       }
+
+      if ($this->config->get('glavpunktcourier_payment_type') == 1) {
+        $payment_type = "cash";
+      }else{
+        $payment_type = "prepaid";
+      }
+
       $selectCities .= '<script>
         $(function(){
           $(\'.glavpunkt-courier\').change(function(e, firstCall){
@@ -74,7 +81,14 @@ class ModelExtensionShippingCourierglavpunkt extends Model
              $.ajax({
               url: "https://glavpunkt.ru/api/get_tarif",
               type: "GET",
-              data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice},
+              data: {
+                serv:"курьерская доставка",
+                cityFrom:cityFrom,
+                cityTo:selectedCity,
+                weight:weight,
+                price:itemsPrice, 
+                paymentType:"'.$payment_type.'"
+              },
               dataType: "json",
               success: function(data){
               var tarif = Math.round(data["tarif"]);

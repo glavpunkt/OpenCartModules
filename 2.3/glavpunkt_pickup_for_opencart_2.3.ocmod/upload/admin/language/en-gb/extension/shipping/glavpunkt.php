@@ -4,6 +4,10 @@ $_['heading_title']       = "Главпункт - доставка в пункт
 
 $_['simple_text_enabled']    = 'Установлен';
 $_['simple_text_disabled']    = 'Не установлен';
+
+$_['count_with_rko_text']    = 'Считать сумму с РКО';
+$_['count_without_rko_text']    = 'Считать сумму без РКО';
+
 // Text
 $_['text_shipping']       = 'Доставка';
 $_['text_success']        = 'Настройки модуля Главпункт обновлены!';

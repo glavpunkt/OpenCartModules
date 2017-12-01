@@ -43,9 +43,11 @@ class ControllerExtensionShippingCourierglavpunkt extends Controller {
         $data['text_edit']           = $this->language->get('text_edit');
 
 
-        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');
-        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');
+        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');// post courierglavpunkt_status
+        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');// post courierglavpunkt_status
 
+        $data['count_with_rko_text'] = $this->language->get('count_with_rko_text');// post glavpunktcourier_payment_type
+        $data['count_without_rko_text'] = $this->language->get('count_without_rko_text');// post glavpunktcourier_payment_type
 
         $data['entry_status']        = $this->language->get('entry_status');
         $data['entry_sort_order']    = $this->language->get('entry_sort_order');
@@ -91,6 +93,12 @@ class ControllerExtensionShippingCourierglavpunkt extends Controller {
         } else {
             $data['courierglavpunkt_status'] = $this->config->get('courierglavpunkt_status');
         }
+
+        if (isset($this->request->post['glavpunktcourier_payment_type'])) {
+            $data['glavpunktcourier_payment_type'] = $this->request->post['glavpunktcourier_payment_type'];
+        } else {
+            $data['glavpunktcourier_payment_type'] = $this->config->get('glavpunktcourier_payment_type');
+        }        
 
         if (isset($this->request->post['courierglavpunkt_simple_status'])) {
             $data['courierglavpunkt_simple_status'] = $this->request->post['courierglavpunkt_simple_status'];

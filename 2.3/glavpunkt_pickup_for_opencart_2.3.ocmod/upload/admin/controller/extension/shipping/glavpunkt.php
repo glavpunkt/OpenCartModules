@@ -43,10 +43,11 @@ class ControllerExtensionShippingGlavpunkt extends Controller {
         $data['text_no']             = $this->language->get('text_no');
         $data['text_edit']             = $this->language->get('text_edit');
 
+        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');// post glavpunktpoints_simple_status
+        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');// post glavpunktpoints_simple_status
 
-        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');
-        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');
-
+        $data['count_with_rko_text'] = $this->language->get('count_with_rko_text');// post glavpunktpoints_payment_type
+        $data['count_without_rko_text'] = $this->language->get('count_without_rko_text');// post glavpunktpoints_payment_type
 
         $data['entry_status']        = $this->language->get('entry_status');
         $data['entry_sort_order']    = $this->language->get('entry_sort_order');
@@ -97,6 +98,12 @@ class ControllerExtensionShippingGlavpunkt extends Controller {
             $data['glavpunktpoints_simple_status'] = $this->request->post['glavpunktpoints_simple_status'];
         } else {
             $data['glavpunktpoints_simple_status'] = $this->config->get('glavpunktpoints_simple_status');
+        }
+
+        if (isset($this->request->post['glavpunktpoints_payment_type'])) {
+            $data['glavpunktpoints_payment_type'] = $this->request->post['glavpunktpoints_payment_type'];
+        } else {
+            $data['glavpunktpoints_payment_type'] = $this->config->get('glavpunktpoints_payment_type');
         }
 
         if (isset($this->request->post['glavpunkt_sort_order'])) {

@@ -127,6 +127,22 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-2 control-label" >Настройки РКО:</label>
+            <div class="col-sm-10">
+              <select name="glavpunktpoints_payment_type">
+                <?php if ($glavpunktcourier_payment_type) { ?>
+                <option value="1" selected="selected"><?=$count_with_rko_text?></option>
+                <option value="0"><?=$count_without_rko_text?></option>
+                <?php } else { ?>
+                <option value="1"><?=$count_with_rko_text?></option>
+                <option value="0" selected="selected"><?=$count_without_rko_text?></option>
+                <?php } ?>
+              </select>
+            </div>
+           <div class="col-sm-10">Укажите требуется ли учитывать РКО, данный папаметр повлияет на стоимость доставки.</div>
+        </div>
+
+        <div class="form-group">
           <label class="col-sm-2 control-label" >Статус:</label>
           <div class="col-sm-10">
             <select name="courierglavpunkt_status">

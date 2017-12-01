@@ -78,9 +78,17 @@ class ModelExtensionShippingGlavpunkt extends Model
                 \'cityTo\': punktInfo.city,
                 \'punktId\': punktInfo.id,
                 \'weight\': \''.$weight.'\',
-                \'price\':\''.$this->cart->getTotal().'\',
-                \'paymentType\': \'cash\'
-              }).done(function(data) {
+                \'price\':\''.$this->cart->getTotal().'\',';
+
+                $quote_text .= "'paymentType':";
+
+                if ($this->config->get('glavpunktpoints_payment_type') == 1) {
+                  $quote_text .= "'cash',";
+                }else{
+                  $quote_text .= "'prepaid',";
+                }
+
+               $quote_text .= '}).done(function(data) {
                    if (data.result == \'ok\') {
                     tarif =  data.tarif;
                     '.$userSettings.'
