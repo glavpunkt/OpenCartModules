@@ -1,6 +1,6 @@
 <?php
 // Heading
-$_['heading_title']       = "Главпункт Курьерская доставка по РФ";
+$_['heading_title']       = "Главпункт Почта РФ";
 
 // Text
 $_['text_shipping']       = 'Доставка';
