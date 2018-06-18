@@ -63,8 +63,7 @@ class ModelShippingGlavpunkt extends Model
                   }
                 }
               });
-              function selectPunkt(punktInfo) { 
-                //$("input:radio[value=\'glavpunkt.glavpunkt\']").prop("checked", true);
+              function selectPunkt(punktInfo) {
                 var name = punktInfo.name;
                 var tarif =0;
                 if (name != punktInfo.address) {
@@ -78,10 +77,20 @@ class ModelShippingGlavpunkt extends Model
                 \'cityTo\': punktInfo.city,
                 \'punktId\': punktInfo.id,
                 \'weight\': \'' . $weight . '\',
-                \'price\':\'' . $this->cart->getTotal() . '\',
-                \'paymentType\': \'cash\'
-              }).done(function(data) {
+                \'price\':\'' . $this->cart->getTotal() . '\',\';
+                
+            $quote_text .= "\'paymentType\':";
+
+            if ($this->config->get(\'glavpunktpoints_payment_type\') == 1) {
+                $quote_text .= "\'cash\'";
+            } else {
+                $quote_text .= "\'prepaid\'";
+            }
+
+            $quote_text .= '}).done(function(data) {
                    if (data.result == \'ok\') {
+                   $("input:radio[value=\'glavpunkt.glavpunkt\']").prop("checked", true);
+
                     tarif =  data.tarif;
                     ' . $userSettings . '
                     $.ajax({

@@ -10,6 +10,9 @@ $_['text_extension']	 = 'Расширения';
 $_['simple_text_enabled']    = 'Установлен';
 $_['simple_text_disabled']    = 'Не установлен';
 
+$_['count_with_rko_text']    = 'Считать сумму с РКО';
+$_['count_without_rko_text']    = 'Считать сумму без РКО';
+
 $_['text_titlem']         = "Для работы модуля вам необходимо быть клиентом <a href=\"//glavpunkt.ru/\" target=\"_blank\">glavpunkt.ru</a>";
 ;
 
