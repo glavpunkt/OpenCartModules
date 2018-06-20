@@ -20,7 +20,7 @@ class ModelShippingGlavpunkt extends Model
             $weight = 1;
         }
 
-        if (isset($address['city'])) {
+        if (isset($address['city']) && strlen($address['city']) > 0) {
             $city = $address['city'];
         } elseif ($this->config->get('glavpunkt_home_city') != null) {
             $city = $this->config->get('glavpunkt_home_city');
@@ -29,6 +29,44 @@ class ModelShippingGlavpunkt extends Model
         }
 
         if ($status) {
+            // расчёт на бэке
+            if ($city == 'Санкт-Петербург') {
+                $deliveryType = 'выдача';
+                $punktId = 'Moskovskaya-A16';// пункт по-умолчанию
+            } elseif($city == 'Москва') {
+                $deliveryType = 'выдача';
+                $punktId = 'Msk-Novokuzneckaja-18S4';// пункт по-умолчанию
+            } else {
+                $deliveryType = 'выдача по РФ';
+                $punktId = '';
+            }
+
+            if ($this->config->get('glavpunktpoints_payment_type') == 1) {
+                $paymentType = 'cash';
+            } else {
+                $paymentType = 'prepaid';
+            }
+
+            $paramsDelivery = array(
+                'serv' => $deliveryType,// тип доставки
+                'cityFrom' => 'Санкт-Петербург',// город отправки заказа
+                'cityTo' => $city,// город доставки заказа
+                'weight' => $weight,// вес заказа
+                'price' => $this->cart->getTotal(),// стоимость заказа
+                'punktId' => $punktId,// id пункта получения
+                'paymentType' => $paymentType// тип оплаты (из настроек службы доставки)
+            );
+
+            $res = $this->getTarif($paramsDelivery);
+
+            if ($res['result'] == 'ok') {
+                // стоимость доставки
+                $cost = $res['tarif'];
+            } else {
+                $cost = 0;
+            }
+            // end расчёт на бэке
+
             if ($this->config->get('glavpunkt_tarif_edit_code')) {
                 $order = array("&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;");
                 $replace = array(" ", "<", ">", '"', "'");
@@ -152,5 +190,82 @@ class ModelShippingGlavpunkt extends Model
             );
         }
         return $method_data;
+    }
+
+    /**
+     * Формируем запрос на стоимость расчёта доставки к API Главпункта, ответ - json-массив
+     *
+     * @param array $params массив с переданными параметрами из метода calculateConcrete()
+     *
+     * @return array ['result' => корректен ли ответ на запрос, 'serv' => тип доставки, 'tarif' => тариф за доставку,
+     * 'cityFrom' => город отправки заказа, 'cityTo' => город доставки заказа, 'price' => стоимость заказа,
+     * 'weight' => вес заказа, 'paymentType' => тип оплаты, 'period' => срок доставки груза]
+     *
+     */
+    private function getTarif($params)
+    {
+        $get = '?' . http_build_query($params, '', '&');// строка запроса с переданными параметрами
+        // строка запроса с замененными пробелами (после http_build_query = '+') на %20, для версий php < 5.3
+        $query = str_replace('+', '%20', $get);
+        $url = 'https://glavpunkt.ru/api/get_tarif' . $query;// ссылка для запроса
+        $answer = $this->request($url);// получаем содержимое страницы запроса
+
+        return $answer;
+    }
+
+    /**
+     * Проверяем подключен ли Curl, отключен ли file_get_contents
+     *
+     * @param string urlPage урл страницы
+     *
+     */
+    private function request($urlPage)
+    {
+        if (ini_get('allow_url_fopen')) {
+            return $this->requestByFileGetContents($urlPage); // отправка запроса через file_get_contents
+        } elseif (function_exists('curl_version')) {
+            return $this->requestByCurl($urlPage);// отправка запроса курлом
+        } else {
+            // не удалось получить тариф, следует проверить настройки расширения curl
+            // или разрешить file_get_contents с помощью директивы allow_url_fopen = 1
+            return 'DELIVERY_ERROR_CURL_FGC';
+        }
+    }
+
+    /**
+     * Получаем страницу ответа API с помощью file_get_contents
+     *
+     * @param string urlPagebyFGC урл страницы
+     *
+     */
+    private function requestByFileGetContents($urlPageByFGC)
+    {
+        $page = json_decode(file_get_contents($urlPageByFGC), true);
+
+        return $page;
+    }
+
+    /**
+     * Получаем страницу ответа API с помощью Curl
+     *
+     * @param string urlPagebyCurl урл страницы
+     *
+     */
+    private function requestByCurl($urlPagebyCurl)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $urlPagebyCurl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        $responce = curl_exec($ch);
+
+        if (curl_getinfo($ch, CURLINFO_HTTP_CODE) !== 200) {
+            return false;
+        } else {
+            $pageCurl = json_decode($responce, true);
+
+            return $pageCurl;
+        }
     }
 }
