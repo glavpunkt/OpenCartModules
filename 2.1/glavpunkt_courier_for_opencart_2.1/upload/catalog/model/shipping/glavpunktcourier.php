@@ -62,10 +62,6 @@ class ModelShippingGlavpunktcourier extends Model {
             }
             $selectCities .= '</select>';
 
-            // if (isset($this->session->data['courierreloaded']) && $this->session->data['courierreloaded'] == true){
-            //   $selectCities .= '<script> $(function(){$(\'#courierDeliveryGlavpunkt\').siblings("input").prop( "checked", true);});</script>';
-            // }
-
             $selectCities .= '<script>
         $(function(){
           $(\'.glavpunkt-courier\').change(function(e, firstCall){
@@ -91,6 +87,7 @@ class ModelShippingGlavpunktcourier extends Model {
                     success: function(html) {';
             if ($this->config->get('glavpunktcourier_simple_status') == 1) {// если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
                 $selectCities .= 'if (!firstCall) {
+                          $("input[value=\'glavpunktcourier.glavpunktcourier\']").click();
                           reloadAll();
                         }';
             }
