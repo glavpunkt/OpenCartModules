@@ -37,7 +37,7 @@ class ControllerCheckoutGlavpunkt extends Controller
         }
 
         $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'] = $title;
-        $this->session->data['pointsreloaded'] = true;
+        $this->session->data['reloaded'] = true;
         $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'] = $this->request->post['price'];
         $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['text'] = $this->request->post['price'];
 
