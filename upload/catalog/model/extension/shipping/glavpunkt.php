@@ -99,7 +99,7 @@ class ModelExtensionShippingGlavpunkt extends Model
               var style = document.createElement(\'style\');
               style.type = \'text/css\';
               style.innerHTML = \'.glavpunkt_container{ z-index:2000!important; }\';
-              document.head.appendChild(style);glavpunkt_content
+              document.head.appendChild(style);
               </script>';
 
             $quote_text .= '<script type="text/javascript">
