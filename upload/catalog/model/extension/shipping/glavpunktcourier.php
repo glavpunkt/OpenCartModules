@@ -71,10 +71,6 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 }
             }
             $selectCities .= '</select>';
-
-            if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true) {
-                $selectCities .= '<script> $(function(){$(\'#courierDeliveryGlavpunkt\').siblings("input").prop( "checked", true);});</script>';
-            }
             $selectCities .= '<script>
         $(function(){
           $(\'.glavpunkt-courier\').on(\'change\', function(e){
