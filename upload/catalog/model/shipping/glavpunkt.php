@@ -229,7 +229,6 @@ EOD;
             if (isset($this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['cost'])) {
                 $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['cost'];
             }
-            $this->session->data['pointsreloaded'] = false;
         }
 
         // возвращаем массив с доступным методом доставки
