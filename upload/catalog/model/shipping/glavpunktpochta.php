@@ -142,9 +142,7 @@ class ModelShippingGlavpunktpochta extends Model
                         }
 
                     }
-                    $this->session->data['gppochtarfreloaded'] = false;
                 }
-
             } else {
 
                 $text = '<span class="glavpunkt_pochta_error" style="font-size:15px; color:red;">' . $result['message'] . '</span>';

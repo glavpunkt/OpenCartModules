@@ -153,8 +153,6 @@ EOD;
 EOD;
             }
 
-            $this->session->data['courierreloaded'] = false;
-
             if (isset($cityTo)) {
                 $title_text = $this->language->get('text_description') . ' <br>' . $cityTo;
             } else {
