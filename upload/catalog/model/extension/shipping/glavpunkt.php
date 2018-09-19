@@ -220,7 +220,6 @@ EOD;
                     $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'];
                 }
 
-                $this->session->data['reloaded'] = false;
             } else {
                 $title_text = $this->language->get('text_title');
             }
