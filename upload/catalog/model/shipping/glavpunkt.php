@@ -169,7 +169,6 @@ class ModelShippingGlavpunkt extends Model
                 if (isset($this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'])) {
                     $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'];
                 }
-                $this->session->data['pointsreloaded'] = false;
             }
 
             $quote_data['glavpunkt'] = array(
