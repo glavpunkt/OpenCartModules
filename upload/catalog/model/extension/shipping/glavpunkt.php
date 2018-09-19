@@ -175,7 +175,7 @@ class ModelExtensionShippingGlavpunkt extends Model
              <br><span id="glavpunkt_content"></span>';
 
 
-            if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true) {
+            if (isset($this->session->data['pointsreloaded']) && $this->session->data['pointsreloaded'] == true) {
                 if (isset($this->session->data['shipping_methods'])) {
                     $title_text = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'];
                 }

@@ -126,7 +126,6 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                             $cost = $this->session->data['shipping_methods']['glavpunktpochta']['quote']['glavpunktpochta']['cost'];
                         }
                     }
-                    $this->session->data['gppochtarfreloaded'] = false;
                 }
             } else {
                 $text = '<span class="glavpunkt_pochta_error" style="font-size:15px; color:red;">' . $result['message'] . '</span>';
