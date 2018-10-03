@@ -128,6 +128,7 @@ class ModelExtensionShippingGlavpunkt extends Model
                 \'cityTo\': punktInfo.city,
                 \'punktId\': punktInfo.id,
                 \'weight\': \'' . $weight . '\',
+                \'cms\': \'opencart-2.3\',
                 \'price\':\'' . $this->cart->getTotal() . '\',';
 
             $quote_text .= "'paymentType':";

@@ -91,7 +91,7 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                     $.ajax({
                         url: "' . $this->url->link("checkout/glavpunktpochta/setprice", '') . '",
                         type: "post",
-                        data: {price:tarif, type:"Главпункт Почта РФ", info:"' . $fullAddress . '"},
+                        data: {price:tarif, type:"Главпункт Почта РФ", info:"' . $fullAddress . '", cms: "opencart-2.3"},
                         dataType: "html",
                         success: function(html) {
                             $("#glavpunktpochta_price").html(tarif + " р.");
