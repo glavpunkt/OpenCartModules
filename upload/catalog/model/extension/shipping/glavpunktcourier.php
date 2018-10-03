@@ -90,7 +90,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
              $.ajax({
               url: "https://glavpunkt.ru/api/get_tarif",
               type: "GET",
-              data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice},
+              data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice, cms: "opencart-3"},
               dataType: "json",
               success: function(data){             
               var tarif = data["tarif"];

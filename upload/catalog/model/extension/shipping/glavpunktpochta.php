@@ -52,7 +52,8 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                 'address' => $fullAddress,
                 'weight' => $weight,
                 'price' => $this->cart->getTotal(),
-                'index' => $address['postcode']
+                'index' => $address['postcode'],
+                'cms' => 'opencart-3'
             );
             // строка запроса с переданными параметрами
             $get = '?' . http_build_query($params, '', '&');

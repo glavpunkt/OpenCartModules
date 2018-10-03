@@ -165,6 +165,7 @@ EOD;
                             'punktId': punktInfo.id,
                             'weight': $weight,
                             'price':'{$this->cart->getTotal()}',
+                            'cms':'opencart-3',
                             'paymentType':'$paymentTypeJS'
                         }).done(function(data) {
     
