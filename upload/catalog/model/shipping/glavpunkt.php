@@ -54,7 +54,8 @@ class ModelShippingGlavpunkt extends Model
                 'weight' => $weight,// вес заказа
                 'price' => $this->cart->getTotal(),// стоимость заказа
                 'punktId' => $punktId,// id пункта получения
-                'paymentType' => $paymentType// тип оплаты (из настроек службы доставки)
+                'paymentType' => $paymentType,// тип оплаты (из настроек службы доставки)
+                'cms=' => 'opencart-2.1'
             );
 
             $res = $this->getTarif($paramsDelivery);
