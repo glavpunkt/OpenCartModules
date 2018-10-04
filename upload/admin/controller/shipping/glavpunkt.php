@@ -109,10 +109,10 @@ class ControllerShippingGlavpunkt extends Controller
         $this->template = 'shipping/glavpunkt.tpl';
 
         /** @var array children Подключение дополнительных модулей и расширений */
-        $this->children = [
+        $this->children = array(
             'common/header',
             'common/footer'
-        ];
+        );
 
         /** Вывод страницы модуля */
         $this->response->setOutput($this->render());

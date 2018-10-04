@@ -12,7 +12,7 @@
 class ControllerModuleGlavpunktorders extends Controller
 {
     /** @var array массив возникаемых ошибок */
-    private $error = [];
+    private $error = array();
 
     /**
      * Метод исполняемый при вызове данного контроллера
@@ -36,7 +36,7 @@ class ControllerModuleGlavpunktorders extends Controller
             if (isset($this->request->post['selected']) && count($this->request->post['selected'])) {
                 $this->load->model('sale/order');
                 // данный массив будет содержать список всех заказов для передачи в Главпункт
-                $orderListToGP = [];
+                $orderListToGP = array();
                 $this->data['fullListPVZ'] = $this->getPVZfromRussia();
                 $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['fullListPVZ']);
                 // получаем детально о каждом заказе
@@ -59,7 +59,7 @@ class ControllerModuleGlavpunktorders extends Controller
                     }
                 }
                 // заполняем основную информация
-                $invoiceInfo = [
+                $invoiceInfo = array(
                     // логин интернет-магазина
                     'login' => $this->config->get('glavpunktorders_login'),
                     // token для авторизации
@@ -72,10 +72,10 @@ class ControllerModuleGlavpunktorders extends Controller
                     'comments_client' => $this->request->post['comments_client'],
                     // Если нужен забор заказов, передайте в этом поле 1 (Отменяет параметр punkt_id!)
                     'pickup_needed' => (isset($this->request->post['pickup_needed']) ? 1 : 0)
-                ];
+                );
                 // если поставлен чекбокс на "нужен забор заказов" то добавляем следующий массив
                 if (isset($this->request->post['pickup_needed'])) {
-                    $invoiceInfo['pickup_params'] = [
+                    $invoiceInfo['pickup_params'] = array(
                         // Дата забора "2017-09-22"
                         'date' => $this->request->post['date'],
                         // Интервал забора "10:00-18:00"
@@ -87,7 +87,7 @@ class ControllerModuleGlavpunktorders extends Controller
                         // Город забора. Доступные значения:  SPB/MSK Внимание!
                         // Если город не указан, используется значение по-умолчанию: SPB
                         'city' => 'SPB'
-                    ];
+                    );
                 }
                 // отправляем данные в Главпункт и получаем идентификатор накладной
                 $answer = json_decode($this->CreateInvoice($invoiceInfo), true);
@@ -129,30 +129,30 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['action'] = $this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], 'SSL');
         // Вывод списка заказов
         $this->getOrdersList();
-        $this->data['notifications'] = [];
+        $this->data['notifications'] = array();
         // вывод сообщения об успешном сохранении модуля
         if (isset($this->session->data['success'])) {
-            $this->data['notifications'][] = [
+            $this->data['notifications'][] = array(
                 'text' => $this->session->data['success'],
                 'type' => 'success'
-            ];
+            );
             unset($this->session->data['success']);
         }
         // Вывод номера накладной при его создании
         if (isset($this->session->data['invoice_id'])) {
-            $this->data['notifications'][] = [
+            $this->data['notifications'][] = array(
                 'text' => $this->language->get('new_invoice_text') . $this->session->data['invoice_id'],
                 'type' => 'success'
-            ];
+            );
             unset($this->session->data['invoice_id']);
         }
         // при наличии ошибок выводим их
         if (isset($this->session->data['error']) && count($this->session->data['error']) > 0) {
             foreach ($this->session->data['error'] as $error) {
-                $this->data['notifications'][] = [
+                $this->data['notifications'][] = array(
                     'text' => $error,
                     'type' => 'warning'
-                ];
+                );
             }
             unset($this->session->data['error']);
         }
@@ -163,22 +163,22 @@ class ControllerModuleGlavpunktorders extends Controller
             $this->data['error_warning'] = '';
         }
         // Вывод хлебных крошек
-        $this->data['breadcrumbs'] = [];
-        $this->data['breadcrumbs'][] = [
+        $this->data['breadcrumbs'] = array();
+        $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
             'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => ''
-        ];
-        $this->data['breadcrumbs'][] = [
+        );
+        $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_module'),
             'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => '-> '
-        ];
-        $this->data['breadcrumbs'][] = [
+        );
+        $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
             'href' => $this->url->link('module/store', 'token=' . $this->session->data['token'], 'SSL'),
             'separator' => '-> '
-        ];
+        );
         // указание на файл представления
         $this->template = 'module/glavpunktorders.tpl';
         // Подключение обязательных блоков для страницы
@@ -371,7 +371,7 @@ class ControllerModuleGlavpunktorders extends Controller
         if (isset($this->request->post['selected'])) {
             $this->data['selected'] = (array)$this->request->post['selected'];
         } else {
-            $this->data['selected'] = [];
+            $this->data['selected'] = array();
         }
         // повторное формирование url исходя из выбранных параметров для сортировок
         // P.S. так работает в стандартном выводе
@@ -538,11 +538,11 @@ class ControllerModuleGlavpunktorders extends Controller
     private function getPriemkaPVZ()
     {
         $curl = curl_init();
-        curl_setopt_array($curl, [
+        curl_setopt_array($curl, array(
             CURLOPT_USERAGENT => 'opencart-v1.5',
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'https://glavpunkt.ru/api/punkts/priemka'
-        ]);
+        ));
         $answer = curl_exec($curl);
         curl_close($curl);
 
@@ -561,11 +561,11 @@ class ControllerModuleGlavpunktorders extends Controller
     private function getPVZ()
     {
         $curl = curl_init();
-        curl_setopt_array($curl, [
+        curl_setopt_array($curl, array(
             CURLOPT_USERAGENT => 'opencart-v2',
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'https://glavpunkt.ru/api/punkts'
-        ]);
+        ));
         $answer = curl_exec($curl);
         curl_close($curl);
 
@@ -584,11 +584,11 @@ class ControllerModuleGlavpunktorders extends Controller
     private function getPVZfromRussia()
     {
         $curl = curl_init();
-        curl_setopt_array($curl, [
+        curl_setopt_array($curl, array(
             CURLOPT_USERAGENT => 'opencart-v1.5',
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'http://glavpunkt.ru/punkts-rf.json'
-        ]);
+        ));
         $answer = curl_exec($curl);
         curl_close($curl);
 
@@ -653,18 +653,18 @@ class ControllerModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
-        $parts = [];
+        $parts = array();
         // получаем номенклатуру заказа
         foreach ($items as $item) {
-            $parts[] = [
+            $parts[] = array(
                 'name' => $item['name'] . " " . $item['model'],
                 'price' => $item['total'],
                 'barcode' => '',
                 'num' => $item['quantity']
-            ];
+            );
         }
         // получаем общие параметры заказа
-        $thisOrder = [
+        $thisOrder = array(
             'sku' => $info['order_id'],
             'price' => $info['total'],
             'client_delivery_price' => "",
@@ -674,7 +674,7 @@ class ControllerModuleGlavpunktorders extends Controller
             'is_prepaid' => 0,
             'weight' => 1,
             'parts' => $parts
-        ];
+        );
         // тут исходя из кода доставки мы заполняем нужные поля
         if ($info['shipping_code'] === 'glavpunkt.courier') {
             $delivery_date = '';
@@ -718,19 +718,19 @@ class ControllerModuleGlavpunktorders extends Controller
                 }
             }
             $thisOrder['serv'] = 'курьерская доставка';
-            $thisOrder['delivery'] = [
+            $thisOrder['delivery'] = array(
                 'city' => $info['shipping_city'],
                 'date' => $delivery_date, // delivery_date
                 'time' => $delivery_time, // delivery_from_hour , delivery_to_hour
                 'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
-            ];
+            );
         }
         if ($info['shipping_code'] === 'glavpunkt.post') {
             // Выполнение условия если выбрана доставка "Почта РФ"
             $thisOrder['serv'] = 'почта';
-            $thisOrder['pochta'] = [
+            $thisOrder['pochta'] = array(
                 'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
-            ];
+            );
         }
         if ($info['shipping_code'] === 'glavpunkt.pickup' && $punktId !== null) {
             // Выполнение условия если выбрана доставка "Выдача"

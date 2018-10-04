@@ -53,7 +53,7 @@ class ModelShippingGlavpunkt extends Model
         // Подгрузка настроек
         $this->load->model('setting/setting');
 
-        $quote_data = [];
+        $quote_data = array();
 
         // Проверяем включение "самовывоз" и доступность данной услуги из этого города
         if ($this->config->get('glavpunkt_pickup_status') == 1 && $address['city'] !== '') {
@@ -91,16 +91,16 @@ class ModelShippingGlavpunkt extends Model
         // проверяем на количество доступных методов доставки
         if (count($quote_data) > 0) {
             // и выводим их
-            return [
+            return array(
                 'code' => 'glavpunkt',
                 'title' => $this->language->get('text_title'),
                 'quote' => $quote_data,
                 'sort_order' => '',
                 'error' => ''
-            ];
+            );
         } else {
             // или же возвращаем пустое значение
-            return [];
+            return array();
         }
     }
 
@@ -233,7 +233,7 @@ EOD;
         }
 
         // возвращаем массив с доступным методом доставки
-        return [
+        return array(
             'code' => 'glavpunkt.pickup',
             'title' => $script,
             'cost' => $cost,
@@ -242,7 +242,7 @@ EOD;
             // Конвертация рублей в текущую валюту.
                 $this->currency->convert($cost, 'RUB', $this->currency->getCode())
             )
-        ];
+        );
     }
 
     /**
@@ -322,7 +322,7 @@ EOD;
         }
 
         if ($answer['result'] === 'ok') {
-            return [
+            return array(
                 'code' => 'glavpunkt.courier',
                 'title' => $this->language->get('courier_title') . $inputs,
                 'cost' => $answer['tarif'],
@@ -331,9 +331,9 @@ EOD;
                 /** Конвертация рублей в текущую валюту. */
                     $this->currency->convert($answer['tarif'], 'RUB', $this->currency->getCode())
                 )
-            ];
+            );
         } else {
-            return [];
+            return array();
         }
     }
 
@@ -361,7 +361,7 @@ EOD;
         $answer = $this->request($url);
 
         if ($answer['result'] === 'ok') {
-            return [
+            return array(
                 'code' => 'glavpunkt.post',
                 'title' => $this->language->get('post_title'),
                 'cost' => $answer['tarifTotal'],
@@ -370,9 +370,9 @@ EOD;
                 /** Конвертация рублей в текущую валюту. */
                     $this->currency->convert($answer['tarifTotal'], 'RUB', $this->currency->getCode())
                 )
-            ];
+            );
         } else {
-            return [];
+            return array();
         }
     }
 
@@ -396,8 +396,8 @@ EOD;
             '&price=' . $this->cart->getTotal() .
             '&cms=' . 'opencart-1.5' .
             '&paymentType=' . $this->config->get('glavpunkt_paymentType');
-
-        return $this->request($url)['tarif'];
+        $calculation = $this->request($url);
+        return $calculation['tarif'];
     }
 
     /**
@@ -409,10 +409,10 @@ EOD;
     private function request($url)
     {
         $curl = curl_init();
-        curl_setopt_array($curl, [
+        curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $url
-        ]);
+        ));
         $answer = json_decode(curl_exec($curl), true);
         curl_close($curl);
 
