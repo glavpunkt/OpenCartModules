@@ -180,7 +180,8 @@ class ModelShippingGlavpunkt extends Model
                         'punktId': punktInfo.id,
                         'weight': $weigth,
                         'price': $price,
-                        'paymentType': '$paymentType'
+                        'paymentType': '$paymentType',
+                        'cms': 'opencart-1.5'
                     }).done(function(data) {
                         if (data.result == 'ok') {    
                             /* При положительном ответе выполняем следующее */
@@ -259,6 +260,7 @@ EOD;
             '&cityTo=' . $address['city'] .
             '&weight=' . $this->cart->getWeight() .
             '&price=' . $this->cart->getTotal() .
+            '&cms=' . 'opencart-1.5' .
             '&paymentType=' . $this->config->get('glavpunkt_paymentType');
 
         $answer = $this->request($url);
@@ -353,6 +355,7 @@ EOD;
             '&weight=' . $this->cart->getWeight() .
             '&price=' . $this->cart->getTotal() .
             '&index=' . $address['postcode'] .
+            '&cms=' . 'opencart-1.5' .
             '&paymentType=' . $this->config->get('glavpunkt_paymentType');
 
         $answer = $this->request($url);
@@ -391,6 +394,7 @@ EOD;
             '&cityTo=' . $address['city'] .
             '&weight=' . $this->cart->getWeight() .
             '&price=' . $this->cart->getTotal() .
+            '&cms=' . 'opencart-1.5' .
             '&paymentType=' . $this->config->get('glavpunkt_paymentType');
 
         return $this->request($url)['tarif'];
