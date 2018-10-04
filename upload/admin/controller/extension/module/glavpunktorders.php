@@ -828,6 +828,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     {
         $requestJson = json_encode($request);
         $curl = curl_init('http://glavpunkt.ru/api/take_pkgs');
+        curl_setopt($curl, CURLOPT_USERAGENT, "opencart-2.3");
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($curl, CURLOPT_POSTFIELDS, $requestJson);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
