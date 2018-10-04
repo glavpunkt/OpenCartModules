@@ -255,6 +255,7 @@ class ModelShippingGlavpunkt extends Model
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $urlPagebyCurl);
+        curl_setopt($ch, CURLOPT_USERAGENT, "opencart-2.1");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
