@@ -539,7 +539,7 @@ class ControllerModuleGlavpunktorders extends Controller
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_USERAGENT => 'opencart-v2',
+            CURLOPT_USERAGENT => 'opencart-v1.5',
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'https://glavpunkt.ru/api/punkts/priemka'
         ]);
@@ -585,7 +585,7 @@ class ControllerModuleGlavpunktorders extends Controller
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
-            CURLOPT_USERAGENT => 'opencart-v2',
+            CURLOPT_USERAGENT => 'opencart-v1.5',
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => 'http://glavpunkt.ru/punkts-rf.json'
         ]);
@@ -752,7 +752,7 @@ class ControllerModuleGlavpunktorders extends Controller
     {
         $requestJson = json_encode($request);
         $curl = curl_init('http://glavpunkt.ru/api/take_pkgs');
-        curl_setopt($curl, CURLOPT_USERAGENT, "opencart-v2");
+        curl_setopt($curl, CURLOPT_USERAGENT, "opencart-v1.5");
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($curl, CURLOPT_POSTFIELDS, $requestJson);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
