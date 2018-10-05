@@ -108,7 +108,11 @@ class ControllerShippingGlavpunktpochta extends Controller {
             $data['glavpunktpochta_status'] = $this->config->get('glavpunktpochta_status');
         }
 
-
+        if (isset($this->request->post['glavpunktpochta_delivery_name'])) {
+            $data['glavpunktpochta_delivery_name'] = $this->request->post['glavpunktpochta_delivery_name'];
+        } else {
+            $data['glavpunktpochta_delivery_name'] = $this->config->get('glavpunktpochta_delivery_name');
+        }
 
 
         if (isset($this->request->post['glavpunktpochta_simple_status'])) {

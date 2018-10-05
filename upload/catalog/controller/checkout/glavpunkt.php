@@ -27,9 +27,8 @@ class ControllerCheckoutGlavpunkt extends Controller
             $title = 'Пункт выдачи ' . $punkt['brand'] . ': ' . $punkt['name'] . ', ' . ' <br>' .
                 $punkt['city'] . ' <br>' .
                 ' Телефон: ' . $punkt['phone'] . ' <br>' .
-                $this->request->post['price'] . ' р.' . ' <br>' .
                 ' Адрес: ' . $punkt['address'] . ' <br>' .
-                ' График работы: ' . $punkt['work_time'] . ' <br>' . $punkt['deliveryDays'];
+                ' График работы: ' . $punkt['work_time'];
         }
 
         $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'] = $title;
