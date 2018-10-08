@@ -64,7 +64,6 @@ class ModelShippingGlavpunktpochta extends Model
             $url = 'https://glavpunkt.ru/api/get_pochta_tarif' . $get;
 
             if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_USERAGENT, "opencart-2.1");
                 curl_setopt($curl, CURLOPT_URL, $url);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 $out = curl_exec($curl);
@@ -90,6 +89,7 @@ class ModelShippingGlavpunktpochta extends Model
                   data["price"] = ' . $this->cart->getTotal() . ';
                   data["tarif"] = ' . $result["tarifTotal"] . ';
                   data["weight"] = ' . $weight . ';
+                  data["cms"] = "opencart-2.1";
                 ';
 
                 $jsCode .= 'var tarif = data["tarif"];
@@ -99,7 +99,7 @@ class ModelShippingGlavpunktpochta extends Model
                     $.ajax({
                         url: "' . $this->url->link("checkout/glavpunktpochta/setprice", '') . '",
                         type: "post",
-                        data: {price:tarif, type:"Главпункт Почта РФ", info:"' . $fullAddress . '", cms: "opencart-2.1"},
+                        data: {price:tarif, type:"Главпункт Почта РФ", info:"' . $fullAddress . '"},
                         dataType: "html",
                         success: function(html) {
                             $("#glavpunktpochta_price").html(tarif + " р.");
@@ -143,7 +143,9 @@ class ModelShippingGlavpunktpochta extends Model
                         }
 
                     }
+                    $this->session->data['gppochtarfreloaded'] = false;
                 }
+
             } else {
 
                 $text = '<span class="glavpunkt_pochta_error" style="font-size:15px; color:red;">' . $result['message'] . '</span>';
@@ -152,15 +154,23 @@ class ModelShippingGlavpunktpochta extends Model
 
             $quote_data['glavpunktpochta'] = array(
                 'code' => 'glavpunktpochta.glavpunktpochta',
-                'title' => $title_text,
+                'title' => (
+                $this->config->get('glavpunktpochta_delivery_name')
+                    ? $this->config->get('glavpunktpochta_delivery_name')
+                    : $title_text
+                ),
                 'cost' => $cost,
                 'tax_class_id' => 0,
                 'text' => $text
             );
 
-            $method_data = array(
+           $method_data = array(
                 'code' => 'glavpunktpochta',
-                'title' => $this->language->get('text_title'),
+                'title' => (
+                $this->config->get('glavpunktpochta_delivery_name')
+                    ? $this->config->get('glavpunktpochta_delivery_name')
+                    : $this->language->get('text_title')
+                ),
                 'quote' => $quote_data,
                 'sort_order' => $this->config->get('glavpunktpochta_sort_order'),
                 'error' => false

@@ -33,7 +33,7 @@ class ModelShippingGlavpunkt extends Model
             if ($city == 'Санкт-Петербург') {
                 $deliveryType = 'выдача';
                 $punktId = 'Moskovskaya-A16';// пункт по-умолчанию
-            } elseif($city == 'Москва') {
+            } elseif ($city == 'Москва') {
                 $deliveryType = 'выдача';
                 $punktId = 'Msk-Novokuzneckaja-18S4';// пункт по-умолчанию
             } else {
@@ -54,8 +54,7 @@ class ModelShippingGlavpunkt extends Model
                 'weight' => $weight,// вес заказа
                 'price' => $this->cart->getTotal(),// стоимость заказа
                 'punktId' => $punktId,// id пункта получения
-                'paymentType' => $paymentType,// тип оплаты (из настроек службы доставки)
-                'cms=' => 'opencart-2.1'
+                'paymentType' => $paymentType// тип оплаты (из настроек службы доставки)
             );
 
             $res = $this->getTarif($paramsDelivery);
@@ -90,18 +89,49 @@ class ModelShippingGlavpunkt extends Model
               var style = document.createElement(\'style\');
               style.type = \'text/css\';
               style.innerHTML = \'.glavpunkt_container{ z-index:2000!important; }\';
-              document.head.appendChild(style);glavpunkt_content
+              document.head.appendChild(style);
               </script>';
 
+            // Скрипт, который не даёт создать заказ если не выбран пункт выдачи
+            if ($this->config->get('glavpunktpoints_simple_status') == 1) {
+                $script = <<<EOD
+$('#simplecheckout_button_confirm').on('click', function(e){
+    if ($("input:radio[value='glavpunkt.glavpunkt']").is(':checked')){
+        if ($('#glavpunkt_content').html() == ''){
+            $('#glavpunkt_open_map').css({display: "inline-block", padding:"3px", border: "2px solid red"});
+            return false;
+        }
+    }
+});               
+EOD;
+            } else {
+                $script = <<<EOD
+$('#button-shipping-method').on('click', function(e){
+    if ($("input:radio[value='glavpunkt.glavpunkt']").is(':checked')){
+        if ($('#glavpunkt_content').html() == ''){
+            $('#glavpunkt_open_map').css({display: "inline-block", padding:"3px", border: "2px solid red"});
+            return false;
+        }
+    }
+});
+EOD;
+            }
+
             $quote_text .= '<script type="text/javascript">
-            $(\'#button-shipping-method\').on(\'click\', function(e){
-                if ($("input:radio[value=\'glavpunkt.glavpunkt\']").is(\':checked\')){
-                  if ($(\'#glavpunkt_content\').html() == \'\'){
-                    $(\'#glavpunkt_open_map\').css({display: "inline-block", padding:"3px", border: "2px solid red"});
-                     return false;
-                  }
+              ' . $script . '
+              
+            function serPunktsPriceWithFix(price, city){
+                var data = {
+                    "Санкт-Петербург": ' . $this->config->get('glavpunkt_price_spb') . ',                    
+                    "Москва": ' . $this->config->get('glavpunkt_price_msk') . '
+                };
+                if ( data[city] ){
+                    return data[city];
+                }else{
+                    return price;
                 }
-              });
+            }
+                                
               function selectPunkt(punktInfo) {
                 var name = punktInfo.name;
                 var tarif =0;
@@ -117,25 +147,33 @@ class ModelShippingGlavpunkt extends Model
                 \'punktId\': punktInfo.id,
                 \'weight\': \'' . $weight . '\',
                 \'price\':\'' . $this->cart->getTotal() . '\',
+                \'cms\': \'opencart-2.1\',
                 \'paymentType\':';
 
-                if ($this->config->get('glavpunktpoints_payment_type') == 1) {
-                    $quote_text .= '\'cash\'';
-                } else {
-                    $quote_text .= '\'prepaid\'';
-                }
+            if ($this->config->get('glavpunktpoints_payment_type') == 1) {
+                $quote_text .= '\'cash\'';
+            } else {
+                $quote_text .= '\'prepaid\'';
+            }
 
-              $quote_text .= '
+            $quote_text .= '
               }).done(function(data) {
                    if (data.result == \'ok\') {
                    $("input:radio[value=\'glavpunkt.glavpunkt\']").prop("checked", true);
-
-                    tarif =  data.tarif;
+                    tarif = serPunktsPriceWithFix(data.tarif, punktInfo.city);
                     ' . $userSettings . '
                     $.ajax({
                       url: \'' . $this->url->link('checkout/glavpunkt/setprice', '') . '\',
                       type: \'post\',
-                      data: {price:tarif, type:\'Главпункт Пункты Выдачи по РФ\', info:punktInfo.name, address:punktInfo.address, phone:punktInfo.phone, work_time:punktInfo.work_time, city_to:punktInfo.city, punkt:punktInfo},
+                      data: {
+                        price:tarif, 
+                        type:\'Главпункт Пункты Выдачи по РФ\', 
+                        info:punktInfo.name, 
+                        address:punktInfo.address, 
+                        phone:punktInfo.phone, 
+                        work_time:punktInfo.work_time, 
+                        city_to:punktInfo.city, punkt:punktInfo
+                        },
                       dataType: \'html\',
                       success: function(html) {
                         $(\'#glavpunkt_open_map\').css({display: "inline-block", padding:"3px", border: "0"});';
@@ -156,8 +194,9 @@ class ModelShippingGlavpunkt extends Model
                     console.log(textStatus);
                 });
               }
-             </script> 
-             <br><span id="glavpunkt_content"></span>';
+             </script>
+             </br>
+             <span id="glavpunkt_content"></span>';
 
             $title_text = $this->language->get('text_title');
             $cost = 0;
@@ -181,14 +220,26 @@ class ModelShippingGlavpunkt extends Model
                 'tax_class_id' => 0,
             );
 
+            if (isset($this->session->data['pointsreloaded']) && $this->session->data['pointsreloaded'] == true) {
+                $error = '';
+            } else {
+                $quote_data = [];
+                $error = $quote_text;
+            }
+
             $method_data = array(
                 'code' => 'glavpunkt',
-                'title' => $this->language->get('text_title'),
+                'title' => (
+                $this->config->get('glavpunkt_delivery_name')
+                    ? $this->config->get('glavpunkt_delivery_name')
+                    : $this->language->get('text_title')
+                ),
                 'quote' => $quote_data,
                 'sort_order' => $this->config->get('glavpunkt_sort_order'),
-                'error' => false
+                'error' => $error
             );
         }
+
         return $method_data;
     }
 
@@ -255,7 +306,6 @@ class ModelShippingGlavpunkt extends Model
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $urlPagebyCurl);
-        curl_setopt($ch, CURLOPT_USERAGENT, "opencart-2.1");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);

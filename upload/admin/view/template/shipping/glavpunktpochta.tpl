@@ -27,6 +27,13 @@
       <div class="panel-body">
         <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-auspost" class="form-horizontal">
           <div class="form-group">
+            <label class="col-sm-2 control-label" >Название способа доставки:</label>
+            <div class="col-sm-10">
+              <input type="text" name="glavpunktpochta_delivery_name" value="<?php echo $glavpunktpochta_delivery_name; ?>" size="80" />
+            </div>
+            <div class="col-sm-10">Введите в данное поле название доставки, которое будет отображаться для клиентов.</div>
+          </div>
+          <div class="form-group">
             <label class="col-sm-2 control-label" >Ваш город:</label>
             <div class="col-sm-10">
               <input type="text" name="glavpunktpochta_home_city" value="<?php echo $glavpunktpochta_home_city; ?>" />

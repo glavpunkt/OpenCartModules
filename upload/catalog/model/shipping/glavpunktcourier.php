@@ -45,7 +45,6 @@ class ModelShippingGlavpunktcourier extends Model
             }
 
             if ($curl = curl_init()) {
-                curl_setopt($curl, CURLOPT_USERAGENT, "opencart-2.1");
                 curl_setopt($curl, CURLOPT_URL, 'https://glavpunkt.ru/api/get_courier_cities');
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
                 $out = curl_exec($curl);
@@ -67,6 +66,18 @@ class ModelShippingGlavpunktcourier extends Model
             $selectCities .= '</select>';
 
             $selectCities .= '<script>
+        function serCourierPriceWithFix(price, city){
+            var data = {
+                "Санкт-Петербург": ' . $this->config->get('glavpunktcourier_price_spb') . ',                    
+                "Москва": ' . $this->config->get('glavpunktcourier_price_msk') . '
+            };
+            if ( data[city] ){
+                return data[city];
+            }else{
+                return price;
+            }
+        }
+
         $(function(){
          var globalCity = \'\'; 
          $(\'.glavpunkt-courier\').change(function(e, firstCall){
@@ -78,10 +89,10 @@ class ModelShippingGlavpunktcourier extends Model
              $.ajax({
               url: "https://glavpunkt.ru/api/get_tarif",
               type: "GET",
-              data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice, cms:"opencart-2.1" },
+              data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice, cms: "opencart-2.1"},
               dataType: "json",
               success: function(data){
-              var tarif = data["tarif"];
+              var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);
                 ' . $userSettingsCourier . '
                 $("#glavpunktcourier_price").html(tarif + " р.");
                 globalCity = city_obl.val();
@@ -154,6 +165,8 @@ EOD;
 EOD;
             }
 
+            $this->session->data['courierreloaded'] = false;
+
             if (isset($cityTo)) {
                 $title_text = $this->language->get('text_description') . ' <br>' . $cityTo;
             } else {
@@ -165,10 +178,13 @@ EOD;
             } else {
                 $tarif = 0;
             }
-
             $quote_data['glavpunktcourier'] = array(
                 'code' => 'glavpunktcourier.glavpunktcourier',
-                'title' => $title_text,
+                'title' => (
+                $this->config->get('glavpunktcourier_delivery_name')
+                    ? $this->config->get('glavpunktcourier_delivery_name')
+                    : $title_text
+                ),
                 'cost' => $tarif,
                 'tax_class_id' => 0,
                 'text' => $selectCities . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
@@ -176,7 +192,11 @@ EOD;
 
             $method_data = array(
                 'code' => 'glavpunktcourier',
-                'title' => $this->language->get('text_title'),
+                'title' => (
+                $this->config->get('glavpunktcourier_delivery_name')
+                    ? $this->config->get('glavpunktcourier_delivery_name')
+                    : $this->language->get('text_title')
+                ),
                 'quote' => $quote_data,
                 'sort_order' => $this->config->get('glavpunktcourier_sort_order'),
                 'error' => false
