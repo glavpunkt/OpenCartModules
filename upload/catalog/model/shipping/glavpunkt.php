@@ -153,10 +153,10 @@ class ModelShippingGlavpunkt extends Model
         // а также выводим скрипт карты с пунктами выдачи
         // и скрипт который будет отправлять запрос на обновление блока доставки
         $script = <<<EOD
-            <span id="checked-point"></span>  
             <a href="javascript:void(0)" onclick="glavpunkt.openMap(selectPunkt,{'defaultCity': '$cityTo'});">
                 $title
-            </a>                 
+            </a>       
+            <span id="checked-point"></span>            
             <style type="text/css">
                 /* Стили, чтобы вспылвающие окна были поверх всех */
                 .glavpunkt_overlay{ z-index:10000!important; }
@@ -220,12 +220,13 @@ class ModelShippingGlavpunkt extends Model
                         console.log(textStatus);
                     });
                 }
-            </script>
+            </script>            
 EOD;
 
+        $pointAddress = '<span id="checked-point">Пункт выдачи не выбран</span>';
         if (isset($this->session->data['pointsreloaded']) && $this->session->data['pointsreloaded'] == true) {
             if (isset($this->session->data['shipping_methods'])) {
-                $script = $this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['title'];
+                $pointAddress = $this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['title'];
             }
             if (isset($this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['cost'])) {
                 $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['pickup']['cost'];
@@ -235,10 +236,10 @@ EOD;
         // возвращаем массив с доступным методом доставки
         return array(
             'code' => 'glavpunkt.pickup',
-            'title' => $script,
+            'title' => $pointAddress,
             'cost' => $cost,
             'tax_class_id' => 1,
-            'text' => $this->currency->format(
+            'text' => $script.$this->currency->format(
             // Конвертация рублей в текущую валюту.
                 $this->currency->convert($cost, 'RUB', $this->currency->getCode())
             )
@@ -279,7 +280,7 @@ EOD;
                 <label for="glavpunktcourier_date">Дата доставки</label>
                 <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date">
                 <br><br>
-                 <label for="glavpunktcourier_time">Интервал доставки</label>
+                <label for="glavpunktcourier_time">Интервал доставки</label>
                 <input 
                     type="text" 
                     class="datetimeinputs" 
@@ -397,6 +398,7 @@ EOD;
             '&cms=' . 'opencart-1.5' .
             '&paymentType=' . $this->config->get('glavpunkt_paymentType');
         $calculation = $this->request($url);
+
         return $calculation['tarif'];
     }
 
