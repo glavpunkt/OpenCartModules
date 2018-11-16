@@ -111,7 +111,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label" >Наличие модуля Simple:</label>
                         <div class="col-sm-10">
-                            <select name="glavpunktpoints_simple_status">
+                            <select name="shipping_glavpunkt_simple_status">
                                 {% if (glavpunktpoints_simple_status) %}
                                 <option value="1" selected="selected">{{ simple_text_enabled }}</option>
                                 <option value="0">{{ simple_text_disabled }}</option>
@@ -127,7 +127,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label" >Настройки РКО:</label>
                         <div class="col-sm-10">
-                            <select name="shipping_glavpunktpoints_payment_type">
+                            <select name="shipping_glavpunkt_payment_type">
                                 {% if (glavpunktpoints_payment_type) %}
                                 <option value="1" selected="selected">{{ count_with_rko_text }}</option>
                                 <option value="0">{{ count_without_rko_text }}</option>
