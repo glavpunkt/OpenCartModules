@@ -122,7 +122,7 @@ class ModelExtensionShippingGlavpunkt extends Model
 EOD;
 
             // скрипт получения цены и внос изменений
-            if ($this->config->get('shipping_glavpunktpoints_payment_type') == 1) {
+            if ($this->config->get('shipping_glavpunkt_payment_type') == 1) {
                 $paymentTypeJS = "cash";
             } else {
                 $paymentTypeJS = "prepaid";
@@ -130,7 +130,7 @@ EOD;
             $link = $this->url->link('checkout/glavpunkt/setprice', '');
 
             // если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
-            if ($this->config->get('shipping_glavpunktpoints_simple_status') == 1) {
+            if ($this->config->get('shipping_glavpunkt_simple_status') == 1) {
                 $simpleConfig = 'reloadAll();';
             } else {
                 $simpleConfig = '$(\'#glavpunkt_content\').html(html);';
@@ -165,7 +165,6 @@ EOD;
                             'punktId': punktInfo.id,
                             'weight': $weight,
                             'price':'{$this->cart->getTotal()}',
-                            'cms':'opencart-3',
                             'paymentType':'$paymentTypeJS'
                         }).done(function(data) {
     
@@ -212,7 +211,7 @@ EOD;
                 <br><span id="glavpunkt_content"></span>
 EOD;
 
-            if (isset($this->session->data['reloaded']) && $this->session->data['reloaded'] == true) {
+            if (isset($this->session->data['pointsreloaded']) && $this->session->data['pointsreloaded'] == true) {
                 if (isset($this->session->data['shipping_methods'])) {
                     $title_text = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['title'];
                 }
@@ -221,6 +220,7 @@ EOD;
                     $cost = $this->session->data['shipping_methods']['glavpunkt']['quote']['glavpunkt']['cost'];
                 }
 
+                $this->session->data['reloaded'] = false;
             } else {
                 $title_text = $this->language->get('text_title');
             }
