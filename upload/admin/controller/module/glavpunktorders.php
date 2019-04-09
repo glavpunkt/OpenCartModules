@@ -28,8 +28,7 @@ class ControllerModuleGlavpunktorders extends Controller
         //Проверка на HTTPS или HTTP
         if (isset($_SERVER['HTTPS'])) {
             $this->isHttps = true;
-        }
-        else {
+        } else {
             $this->isHttps = false;
         }
         // Подключение языкового файла
