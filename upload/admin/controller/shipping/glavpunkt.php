@@ -17,8 +17,17 @@ class ControllerShippingGlavpunkt extends Controller {
             return;
         }
     }
+    private function isHttps()
+    {
+        if (isset($_SERVER['HTTPS']))
+        {
+            return true;
+        }
+        return false;
+    }
 
-    public function index() {
+    public function index()
+    {
         $this->load_language('shipping/glavpunkt');
 
         $this->document->setTitle($this->language->get('heading_title'));
@@ -30,7 +39,7 @@ class ControllerShippingGlavpunkt extends Controller {
 
             $this->session->data['success'] = $this->language->get('text_success');
 
-            $this->response->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], true));
+            $this->response->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], $this->isHttps()));
         }
 
         $data['heading_title']       = $this->language->get('heading_title');
@@ -68,17 +77,17 @@ class ControllerShippingGlavpunkt extends Controller {
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], $this->isHttps())
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_extension'),
-            'href' => $this->url->link('extension/shipping', 'token=' . $this->session->data['token'] . '&type=shipping', true)
+            'href' => $this->url->link('extension/shipping', 'token=' . $this->session->data['token'] . '&type=shipping', $this->isHttps())
         );
 
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('shipping/glavpunkt', 'token=' . $this->session->data['token'], true)
+            'href' => $this->url->link('shipping/glavpunkt', 'token=' . $this->session->data['token'], $this->isHttps())
         );
 
         $data['action'] = HTTPS_SERVER . 'index.php?route=shipping/glavpunkt&token=' . $this->session->data['token'];

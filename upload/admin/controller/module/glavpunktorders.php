@@ -17,11 +17,20 @@ class ControllerModuleGlavpunktorders extends Controller
     /** @var array массив переменных выводимых в представлении */
     private $data = [];
 
+    /** @var bool для проверки HTTPS соединения */
+    private $isHttps;
+
     /**
      * Метод исполняемый при вызове данного контроллера
      */
     public function index()
     {
+        //Проверка на HTTPS или HTTP
+        if (isset($_SERVER['HTTPS']))
+        {
+            $this->isHttps = true;
+        }
+        else $this->isHttps =false;
         // Подключение языкового файла
         $this->load->language('module/glavpunktorders');
         $this->load->language('shipping/glavpunkt');
@@ -114,7 +123,7 @@ class ControllerModuleGlavpunktorders extends Controller
 
             $this->model_setting_setting->editSetting('glavpunktorders', $this->request->post);
             $this->session->data['success'] = $this->language->get('text_success');
-            $this->response->redirect($this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], 'SSL'));
+            $this->response->redirect($this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], $this->isHttps));
         }
 
         // Вывод настроек магазина для взаимодействия с Гдавпункт и подписей к форме
@@ -141,8 +150,8 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['order_list_text'] = $this->language->get('order_list_text');
         $this->data['button_save'] = $this->language->get('button_save');
         $this->data['button_cancel'] = $this->language->get('button_cancel');
-        $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action'] = $this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], $this->isHttps);
+        $this->data['action'] = $this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], $this->isHttps);
 
         // Вывод списка заказов
         $this->getOrdersList();
@@ -189,15 +198,15 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['breadcrumbs'] = [];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL')
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], $this->isHttps)
         ];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('text_module'),
-            'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL')
+            'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], $this->isHttps)
         ];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('module/store', 'token=' . $this->session->data['token'], 'SSL')
+            'href' => $this->url->link('module/store', 'token=' . $this->session->data['token'], $this->isHttps)
         ];
 
         // Подключение обязательных блоков для страницы
@@ -394,12 +403,12 @@ class ControllerModuleGlavpunktorders extends Controller
                 'view' => $this->url->link(
                     'sale/order/info',
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
                 'edit' => $this->url->link(
                     'sale/order/edit',
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
             );
         }
@@ -461,7 +470,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['sort_order'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.order_id' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_customer'] = $this->url->link(
             'module/glavpunktorders',
@@ -471,22 +480,22 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['sort_status'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=status' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_total'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.total' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_added'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.date_added' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_modified'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.date_modified' . $url,
-            'SSL'
+            $this->isHttps
         );
 
         // формирование url исходя из переданных параметров для кнопок пагинации
@@ -539,7 +548,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $pagination->url = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . $url . '&page={page}',
-            'SSL'
+            $this->isHttps
         );
 
         // определение пагинации для вывода на страницу
