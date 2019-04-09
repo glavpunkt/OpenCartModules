@@ -26,6 +26,13 @@ class ControllerExtensionShippingGlavpunktpochta extends Controller
             return;
         }
     }
+    private function isHttps()
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            return true;
+        }
+        return false;
+    }
 
     public function index()
     {
@@ -36,7 +43,7 @@ class ControllerExtensionShippingGlavpunktpochta extends Controller
             $this->model_setting_setting->editSetting('shipping_glavpunktpochta', $this->request->post);
             $this->session->data['success'] = $this->language->get('text_success');
             $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' .
-                $this->session->data['user_token'] . '&type=shipping', true));
+                $this->session->data['user_token'] . '&type=shipping', $this->isHttps()));
         }
         $data['heading_title'] = $this->language->get('heading_title');
         $data['text_enabled'] = $this->language->get('text_enabled');
@@ -62,19 +69,19 @@ class ControllerExtensionShippingGlavpunktpochta extends Controller
         $data['breadcrumbs'] = array();
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
+            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], $this->isHttps())
         );
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_extension'),
             'href' => $this->url->link(
                 'extension/shipping',
                 'user_token=' . $this->session->data['user_token'] . '&type=shipping',
-                true
+                $this->isHttps()
             )
         );
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/shipping/glavpunktpochta' . '&type=shipping', 'user_token=' . $this->session->data['user_token'], true)
+            'href' => $this->url->link('extension/shipping/glavpunktpochta' . '&type=shipping', 'user_token=' . $this->session->data['user_token'], $this->isHttps())
         );
         $data['action'] = HTTPS_SERVER .
             'index.php?route=extension/shipping/glavpunktpochta&user_token=' .

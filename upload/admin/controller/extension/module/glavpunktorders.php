@@ -15,12 +15,21 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     private $error = [];
     /** @var array массив переменных выводимых в представлении */
     private $data = [];
+    /** @var bool для проверки HTTPS соединения */
+    private $isHttps;
 
     /**
      * Метод исполняемый при вызове данного контроллера
      */
     public function index()
     {
+        //Проверка на HTTPS или HTTP
+        if (isset($_SERVER['HTTPS'])) {
+            $this->isHttps = true;
+        } else {
+            $this->isHttps = false;
+        }
+
         ini_set('display_errors', 'On');
         error_reporting(E_ALL);
 
@@ -106,7 +115,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             $this->model_setting_setting->editSetting('module_glavpunktorders', $this->request->post);
             $this->session->data['success'] = $this->language->get('text_success');
             $this->response->redirect(
-                $this->url->link('extension/module/glavpunktorders', 'user_token=' . $this->session->data['user_token'], 'SSL')
+                $this->url->link('extension/module/glavpunktorders', 'user_token=' . $this->session->data['user_token'], $this->isHttps)
             );
         }
         // Вывод настроек магазина для взаимодействия с Гдавпункт и подписей к форме
@@ -134,12 +143,12 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $this->data['cancel'] = $this->url->link(
             'extension/module',
             'user_token=' . $this->session->data['user_token'],
-            'SSL'
+            $this->isHttps
         );
         $this->data['action'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&type=module',
-            'SSL'
+            $this->isHttps
         );
         // Вывод списка заказов
         $this->getOrdersList();
@@ -180,15 +189,15 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $this->data['breadcrumbs'] = [];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], 'SSL')
+            'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], $this->isHttps)
         ];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('text_module'),
-            'href' => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'] . '&type=module', 'SSL')
+            'href' => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'] . '&type=module', $this->isHttps)
         ];
         $this->data['breadcrumbs'][] = [
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/module/glavpunktorders', 'user_token=' . $this->session->data['user_token'], 'SSL')
+            'href' => $this->url->link('extension/module/glavpunktorders', 'user_token=' . $this->session->data['user_token'], $this->isHttps)
         ];
         // Подключение обязательных блоков для страницы
         $this->data['header'] = $this->load->controller('common/header');
@@ -358,12 +367,12 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 'view' => $this->url->link(
                     'sale/order/info',
                     'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
                 'edit' => $this->url->link(
                     'sale/order/edit',
                     'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
             );
         }
@@ -414,32 +423,32 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $this->data['sort_order'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=o.order_id' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_customer'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=customer' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_status'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=status' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_total'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=o.total' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_added'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=o.date_added' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_modified'] = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . '&sort=o.date_modified' . $url,
-            'SSL'
+            $this->isHttps
         );
         // формирование url исходя из переданных параметров для кнопок пагинации
         $url = '';
@@ -482,7 +491,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $pagination->url = $this->url->link(
             'extension/module/glavpunktorders',
             'user_token=' . $this->session->data['user_token'] . $url . '&page={page}',
-            'SSL'
+            $this->isHttps
         );
         // определение пагинации для вывода на страницу
         $this->data['pagination'] = $pagination->render();
