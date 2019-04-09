@@ -26,11 +26,12 @@ class ControllerModuleGlavpunktorders extends Controller
     public function index()
     {
         //Проверка на HTTPS или HTTP
-        if (isset($_SERVER['HTTPS']))
-        {
+        if (isset($_SERVER['HTTPS'])) {
             $this->isHttps = true;
         }
-        else $this->isHttps =false;
+        else {
+            $this->isHttps = false;
+        }
         // Подключение языкового файла
         $this->load->language('module/glavpunktorders');
         $this->load->language('shipping/glavpunkt');

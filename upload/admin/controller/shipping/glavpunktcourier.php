@@ -20,8 +20,7 @@ class ControllerShippingGlavpunktcourier extends Controller {
     }
     private function isHttps()
     {
-        if (isset($_SERVER['HTTPS']))
-        {
+        if (isset($_SERVER['HTTPS'])) {
             return true;
         }
         return false;
