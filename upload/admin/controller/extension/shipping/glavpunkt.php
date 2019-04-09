@@ -23,6 +23,13 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             return;
         }
     }
+    private function isHttps()
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            return true;
+        }
+        return false;
+    }
 
     public function index()
     {
@@ -38,7 +45,7 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             $this->session->data['success'] = $this->language->get('text_success');
 
             $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' .
-                $this->session->data['user_token'] . '&type=shipping', true));
+                $this->session->data['user_token'] . '&type=shipping', $this->isHttps()));
         }
 
 
@@ -82,7 +89,7 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             'href' => $this->url->link(
                 'common/dashboard',
                 'user_token=' . $this->session->data['user_token'],
-                true
+                $this->isHttps()
             )
         );
 
@@ -91,7 +98,7 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             'href' => $this->url->link(
                 'marketplace/extension',
                 'user_token=' . $this->session->data['user_token'] . '&type=shipping' . '&type=shipping',
-                true
+                $this->isHttps()
             )
         );
 
@@ -100,7 +107,7 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             'href' => $this->url->link(
                 'extension/shipping/glavpunkt',
                 'user_token=' . $this->session->data['user_token'],
-                true
+                $this->isHttps()
             )
         );
 
