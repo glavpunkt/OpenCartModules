@@ -14,11 +14,21 @@ class ControllerModuleGlavpunktorders extends Controller
     /** @var array массив возникаемых ошибок */
     private $error = array();
 
+    /** @var bool для проверки HTTPS соединения */
+    private $isHttps;
+
     /**
      * Метод исполняемый при вызове данного контроллера
      */
     public function index()
     {
+        //Проверка на HTTPS или HTTP
+        if (isset($_SERVER['HTTPS'])) {
+            $this->isHttps = true;
+        } else {
+            $this->isHttps = false;
+        }
+
         // Подключение языкового файла
         $this->load->language('module/glavpunktorders');
         // Подключение настроек
@@ -100,7 +110,7 @@ class ControllerModuleGlavpunktorders extends Controller
 
             $this->model_setting_setting->editSetting('glavpunktorders', $this->request->post);
             $this->session->data['success'] = $this->language->get('text_success');
-            $this->redirect($this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], 'SSL'));
+            $this->redirect($this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], $this->isHttps));
         }
         // Вывод настроек магазина для взаимодействия с Гдавпункт и подписей к форме
         $this->data['form_login_title'] = $this->language->get('form_login_title');
@@ -125,8 +135,8 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['button_save'] = $this->language->get('button_save');
         $this->data['button_cancel'] = $this->language->get('button_cancel');
         $this->data['text_no_results'] = $this->language->get('text_no_results');
-        $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
-        $this->data['action'] = $this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], $this->isHttps);
+        $this->data['action'] = $this->url->link('module/glavpunktorders', 'token=' . $this->session->data['token'], $this->isHttps);
         // Вывод списка заказов
         $this->getOrdersList();
         $this->data['notifications'] = array();
@@ -166,17 +176,17 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['breadcrumbs'] = array();
         $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_home'),
-            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL'),
+            'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], $this->isHttps),
             'separator' => ''
         );
         $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('text_module'),
-            'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+            'href' => $this->url->link('extension/module', 'token=' . $this->session->data['token'], $this->isHttps),
             'separator' => '-> '
         );
         $this->data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('module/store', 'token=' . $this->session->data['token'], 'SSL'),
+            'href' => $this->url->link('module/store', 'token=' . $this->session->data['token'], $this->isHttps),
             'separator' => '-> '
         );
         // указание на файл представления
@@ -357,12 +367,12 @@ class ControllerModuleGlavpunktorders extends Controller
                 'view' => $this->url->link(
                     'sale/order/info',
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
                 'edit' => $this->url->link(
                     'sale/order/edit',
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
-                    'SSL'
+                    $this->isHttps
                 ),
             );
         }
@@ -413,32 +423,32 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['sort_order'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.order_id' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_customer'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=customer' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_status'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=status' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_total'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.total' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_added'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.date_added' . $url,
-            'SSL'
+            $this->isHttps
         );
         $this->data['sort_date_modified'] = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . '&sort=o.date_modified' . $url,
-            'SSL'
+            $this->isHttps
         );
         // формирование url исходя из переданных параметров для кнопок пагинации
         $url = '';
@@ -481,7 +491,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $pagination->url = $this->url->link(
             'module/glavpunktorders',
             'token=' . $this->session->data['token'] . $url . '&page={page}',
-            'SSL'
+            $this->isHttps
         );
         // определение пагинации для вывода на страницу
         $this->data['pagination'] = $pagination->render();

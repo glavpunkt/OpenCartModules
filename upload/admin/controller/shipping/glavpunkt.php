@@ -10,9 +10,19 @@ class ControllerShippingGlavpunkt extends Controller
     /** @var array Ошибки */
     private $error = array();
 
+    /** @var bool для проверки HTTPS соединения */
+    private $isHttps;
+
     /** Вывод страницы настроек модуля доставки */
     public function index()
     {
+        /** Проверка на HTTPS или HTTP*/
+        if (isset($_SERVER['HTTPS'])) {
+            $this->isHttps = true;
+        } else {
+            $this->isHttps = false;
+        }
+
         /** Загрузка языкового файла */
         $this->language->load('shipping/glavpunkt');
 
@@ -31,7 +41,7 @@ class ControllerShippingGlavpunkt extends Controller
             $this->session->data['success'] = $this->language->get('text_success');
 
             /** Редирект на страницу списка модулей доставки */
-            $this->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], 'SSL'));
+            $this->redirect($this->url->link('extension/shipping', 'token=' . $this->session->data['token'], $this->isHttps));
         }
 
         /** Установка перенных для вывода на странице модуля */
@@ -100,10 +110,10 @@ class ControllerShippingGlavpunkt extends Controller
         }
 
         /** URL обработки формы */
-        $this->data['action'] = $this->url->link('shipping/glavpunkt', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['action'] = $this->url->link('shipping/glavpunkt', 'token=' . $this->session->data['token'], $this->isHttps);
 
         /** URL кнопки отмены */
-        $this->data['cancel'] = $this->url->link('extension/shipping', 'token=' . $this->session->data['token'], 'SSL');
+        $this->data['cancel'] = $this->url->link('extension/shipping', 'token=' . $this->session->data['token'], $this->isHttps);
 
         /** @var string template Подключение шаблона страницы модуля */
         $this->template = 'shipping/glavpunkt.tpl';
