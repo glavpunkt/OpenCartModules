@@ -139,11 +139,8 @@ class ModelShippingGlavpunkt extends Model
         $cityFrom = $this->config->get('glavpunkt_cityFrom');
 
         // URL для Ajax запроса на сохранение данных по выбранному пункту выдачи
-<<<<<<< HEAD
+
         $ajaxURL = $this->url->link('checkout/glavpunkt/setprice', '',  $this->isHttps());
-=======
-        $ajaxURL = $this->url->link('checkout/glavpunkt/setprice', '', true);
->>>>>>> 04e023dbae18ee128ca67b8ac0cb9692ff6fc1bb
 
         // получение веса заказа
         $weigth = $this->cart->getWeight();
