@@ -45,6 +45,16 @@ class ModelShippingGlavpunkt extends Model
      *  [error] =>
      * ]
      */
+
+    /** Проверка на HTTPS */
+    private function isHttps()
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            return true;
+        }
+        return false;
+    }
+
     function getQuote($address)
     {
         // Подключение языкового файла
@@ -129,7 +139,7 @@ class ModelShippingGlavpunkt extends Model
         $cityFrom = $this->config->get('glavpunkt_cityFrom');
 
         // URL для Ajax запроса на сохранение данных по выбранному пункту выдачи
-        $ajaxURL = $this->url->link('checkout/glavpunkt/setprice', '');
+        $ajaxURL = $this->url->link('checkout/glavpunkt/setprice', '',  $this->isHttps());
 
         // получение веса заказа
         $weigth = $this->cart->getWeight();
@@ -273,7 +283,7 @@ EOD;
             $inputs = '';
         } else {
             // URL для Ajax запроса на сохранение данных по заполненым полям
-            $ajaxURL = $this->url->link('checkout/glavpunkt/setcourier', '');
+            $ajaxURL = $this->url->link('checkout/glavpunkt/setcourier', '',  $this->isHttps());
             $city = $address['city'];
             $inputs = <<<EOD
                 <br><br>
