@@ -72,6 +72,19 @@ class ModelExtensionShippingGlavpunktcourier extends Model
             }
             $selectCities .= '</select>';
             $selectCities .= '<script>
+
+        function serCourierPriceWithFix(price, city){
+            var data = {
+                "Санкт-Петербург": "' . $this->config->get('glavpunktcourier_price_spb') . '",                     
+                "Москва": "' . $this->config->get('glavpunktcourier_price_msk') . '"
+            };
+            if (data[city]){
+                return data[city];
+            } else {
+                return price;
+            }
+        }
+
         $(function(){
           $(\'.glavpunkt-courier\').on(\'change\', function(e){
             var itemsPrice = ' . $this->cart->getTotal() . ';
@@ -85,7 +98,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
               data: {serv:"курьерская доставка", cityFrom:cityFrom, cityTo:selectedCity, weight:weight, price:itemsPrice, cms:"opencart-2.3"},
               dataType: "json",
               success: function(data){             
-              var tarif = data["tarif"];
+              var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);               
                 ' . $userSettingsCourier . '
                 $("#glavpunktcourier_price").html(tarif + " р.");
                   $.ajax({
