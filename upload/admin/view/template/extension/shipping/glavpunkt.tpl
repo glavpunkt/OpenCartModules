@@ -32,6 +32,21 @@
             </div>
           <div class="col-sm-10">Введите в данное поле город из котрого будут отправлятся заказы на доставку (Санкт-Петербург или Москва по умолчанию - Санкт-Петербург).</div>
         </div>
+        <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-auspost" class="form-horizontal">
+<div class="form-group">
+            <label class="col-sm-2 control-label" >Цена для Санкт-Петербурга:</label>
+            <div class="col-sm-10">
+              <input type="text" name="glavpunkt_price_spb" value="<?php echo $glavpunkt_price_spb; ?>" size="5" />
+            </div>
+            <div class="col-sm-10">Введите в данное поле цену доставки, которая будет применена для Санкт-Петербурга.</div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" >Цена для Москвы:</label>
+            <div class="col-sm-10">
+              <input type="text" name="glavpunkt_price_msk" value="<?php echo $glavpunkt_price_msk; ?>" size="5" />
+            </div>
+            <div class="col-sm-10">Введите в данное поле цену доставки, которая будет применена для Москвы.</div>
+          </div>
         <div class="form-group">
           <label class="col-sm-2 control-label" >Вес по умолчанию:</label>
           <div class="col-sm-10">

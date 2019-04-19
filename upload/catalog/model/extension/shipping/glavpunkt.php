@@ -113,6 +113,20 @@ class ModelExtensionShippingGlavpunkt extends Model
               }
             );
 
+                    
+              
+            function serPunktsPriceWithFix(price, city){
+                var data = {
+                    "Санкт-Петербург": ' . $this->config->get('glavpunkt_price_spb') . ',                    
+                    "Москва": ' . $this->config->get('glavpunkt_price_msk') . '
+                };
+                if (data[city]) {
+                    return data[city];
+                }else {
+                    return price;
+                }
+            }
+
               function selectPunkt(punktInfo) { 
                 $("input:radio[value=\'glavpunkt.glavpunkt\']").prop("checked", true);
                 var name = punktInfo.name;
@@ -139,9 +153,11 @@ class ModelExtensionShippingGlavpunkt extends Model
                 $quote_text .= "'prepaid',";
             }
 
-            $quote_text .= '}).done(function(data) {
-                   if (data.result == \'ok\') {
-                    tarif =  data.tarif;
+            $quote_text .= '
+            }).done(function(data) {
+                   if (data.result == \'ok\') {                    
+                    tarif = serPunktsPriceWithFix(data.tarif, punktInfo.city);
+                    
                     ' . $userSettings . '
                     $.ajax({
                       url: \'' . $this->url->link('checkout/glavpunkt/setprice', '') . '\',
