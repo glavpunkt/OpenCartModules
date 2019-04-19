@@ -111,9 +111,7 @@ class ModelExtensionShippingGlavpunkt extends Model
                   }
                 }
               }
-            );
-
-                    
+            );                    
               
             function serPunktsPriceWithFix(price, city){
                 var data = {
