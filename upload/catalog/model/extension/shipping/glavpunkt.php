@@ -111,7 +111,19 @@ class ModelExtensionShippingGlavpunkt extends Model
                   }
                 }
               }
-            );
+            );                    
+              
+            function serPunktsPriceWithFix(price, city){
+                var data = {
+                    "Санкт-Петербург": ' . $this->config->get('glavpunkt_price_spb') . ',                    
+                    "Москва": ' . $this->config->get('glavpunkt_price_msk') . '
+                };
+                if (data[city]) {
+                    return data[city];
+                }else {
+                    return price;
+                }
+            }
 
                     
               
