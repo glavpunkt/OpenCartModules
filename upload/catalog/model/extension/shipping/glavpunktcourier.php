@@ -39,10 +39,13 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 return false;
             }
 
-            $courierDays = $this->config->get('shipping_glavpunktcourier_days');
+            $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
             if ($courierDays < 0){
                 $courierDays = 0;
-            }
+                $date = date('Y-m-d');
+            } else {
+                $date= date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+            } 
 
             if (isset($this->session->data['selected_city'])) {
                 $cityTo = $this->session->data['selected_city'];
@@ -123,32 +126,9 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 $inputs = <<<EOD
                 <br><br>
                 <label for="glavpunktcourier_date">Дата доставки</label>
-                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"><br><br>
+                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"  value="$date" min="$date"><br><br>
                  <label for="glavpunktcourier_time">Интервал доставки</label>
-                <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00"> 
-                <script>
-                    var now = new Date();
-                    var day = ("0" + now.getDate()).slice(-2);
-                    var month = ("0" + (now.getMonth() + 1)).slice(-2);
-                    var today = now.getFullYear()+"-"+(month)+"-"+(day);
-
-                    function addDays(date, days) {
-                      var now = new Date(date);
-                      now.setDate(now.getDate() + days);
-                      var day = ("0" + now.getDate()).slice(-2);
-                      var month = ("0" + (now.getMonth() + 1)).slice(-2);
-                      var result = now.getFullYear()+"-"+(month)+"-"+(day);
-                      return result;
-                    }   
-                    var checkDays = "'. $courierDays .'";
-                    if (checkDays !=0){
-                        $("#glavpunktcourier_date").val(addDays(today, checkDays));
-                        $("#glavpunktcourier_date").attr('min', addDays(today, checkDays));
-                    } else {
-                        $("#glavpunktcourier_date").val(today);
-                        $("#glavpunktcourier_date").attr('min', today);
-                    } 
-                </script>               
+                <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00">         
 EOD;
                 $linkForAjax = $this->url->link("checkout/glavpunktcourier/setcomment", '');
                 $inputs .= <<<EOD
