@@ -39,7 +39,13 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 return false;
             }
 
-
+            $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
+            if ($courierDays < 0){
+                $courierDays = 0;
+                $date = date('Y-m-d');
+            } else {
+                $date= date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+            } 
 
             if (isset($this->session->data['selected_city'])) {
                 $cityTo = $this->session->data['selected_city'];
@@ -120,9 +126,9 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 $inputs = <<<EOD
                 <br><br>
                 <label for="glavpunktcourier_date">Дата доставки</label>
-                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"><br><br>
+                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"  value="$date" min="$date"><br><br>
                  <label for="glavpunktcourier_time">Интервал доставки</label>
-                <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00">                
+                <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00">         
 EOD;
                 $linkForAjax = $this->url->link("checkout/glavpunktcourier/setcomment", '');
                 $inputs .= <<<EOD
