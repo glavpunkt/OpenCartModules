@@ -132,6 +132,18 @@ class ControllerExtensionShippingGlavpunkt extends Controller
             $data['glavpunktpoints_simple_status'] = $this->config->get('shipping_glavpunkt_simple_status');
         }
 
+        if (isset($this->request->post['shipping_glavpunkt_price_spb'])) {
+            $data['glavpunkt_price_spb'] = $this->request->post['shipping_glavpunkt_price_spb'];
+        } else {
+            $data['glavpunkt_price_spb'] = $this->config->get('shipping_glavpunkt_price_spb');
+        }
+
+        if (isset($this->request->post['shipping_glavpunkt_price_msk'])) {
+            $data['glavpunkt_price_msk'] = $this->request->post['shipping_glavpunkt_price_msk'];
+        } else {
+            $data['glavpunkt_price_msk'] = $this->config->get('shipping_glavpunkt_price_msk');
+        }
+
         if (isset($this->request->post['shipping_glavpunkt_payment_type'])) {
             $data['glavpunktpoints_payment_type'] = $this->request->post['shipping_glavpunkt_payment_type'];
         } else {
@@ -166,7 +178,6 @@ class ControllerExtensionShippingGlavpunkt extends Controller
         } else {
             $data['glavpunkt_widget_data'] = $this->config->get('shipping_glavpunkt_widget_data');
         }
-
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');

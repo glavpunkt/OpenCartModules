@@ -154,6 +154,18 @@ class ControllerExtensionShippingGlavpunktcourier extends Controller
             $data['glavpunktcourier_days'] = $this->config->get('shipping_glavpunktcourier_days');
         }
 
+        if (isset($this->request->post['shipping_glavpunktcourier_price_spb'])) {
+            $data['glavpunktcourier_price_spb'] = $this->request->post['shipping_glavpunktcourier_price_spb'];
+        } else {
+            $data['glavpunktcourier_price_spb'] = $this->config->get('shipping_glavpunktcourier_price_spb');
+        }
+
+        if (isset($this->request->post['shipping_glavpunktcourier_price_msk'])) {
+            $data['glavpunktcourier_price_msk'] = $this->request->post['shipping_glavpunktcourier_price_msk'];
+        } else {
+            $data['glavpunktcourier_price_msk'] = $this->config->get('shipping_glavpunktcourier_price_msk');
+        }
+
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');

@@ -136,6 +136,20 @@ EOD;
                 $simpleConfig = '$(\'#glavpunkt_content\').html(html);';
             }
 
+            $quote_text .= '<script type="text/javascript">            
+            function serPunktsPriceWithFix(price, city){
+                var data = {
+                    "Санкт-Петербург": "' . $this->config->get('shipping_glavpunkt_price_spb') . '",                    
+                    "Москва": "' . $this->config->get('shipping_glavpunkt_price_msk') . '"
+                };
+                if ( data[city] ){
+                    return data[city];
+                }else{
+                    return price;
+                }
+            }
+            </script>';
+
             $quote_text .= <<<EOD
                 <script type="text/javascript">
                     $('#button-shipping-method').on('click', function(){
@@ -150,6 +164,7 @@ EOD;
                             }
                         }
                     });
+
                     function selectPunkt(punktInfo) {
                         $("input:radio[value='glavpunkt.glavpunkt']").prop("checked", true);
                         var name = punktInfo.name;
@@ -171,7 +186,7 @@ EOD;
                             console.log(punktInfo);
                             console.log('$link');
                             if (data.result === 'ok') {
-                                tarif =  data.tarif;
+                                tarif = serPunktsPriceWithFix(data.tarif, punktInfo.city);
                                 $userSettings
                                 $.ajax({
                                     url: '$link',
