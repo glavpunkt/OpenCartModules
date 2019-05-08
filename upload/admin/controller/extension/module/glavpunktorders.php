@@ -60,15 +60,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId = $this->findPoint($order_info['shipping_method']);
-                        if (!$findId) {
-                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-                            // с выводом предупреждения
-                            $this->session->data['error'][] =
-                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
-                            continue;
-                        }
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+                        $findId['id,cityId'] = $this->findPoint($order_info['shipping_method']);
+                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
@@ -636,7 +629,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 // т.к. в заказе есть возможность обрезания данной строки
                 // и мы сравниваем исключительно по имеющемуся
             ) {
-                return $point['id'];
+                return $punktAndCity = ['id' => $point['id'],
+                    'cityId' => $point['cityId']];
             }
         }
 
@@ -663,6 +657,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 'price' => $item['total'],
                 'barcode' => '',
                 'num' => $item['quantity']
+
             ];
         }
         // получаем общие параметры заказа
@@ -724,21 +719,31 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 'city' => $info['shipping_city'],
                 'date' => $delivery_date, // delivery_date
                 'time' => $delivery_time, // delivery_from_hour , delivery_to_hour
-                'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
+                'address' => $info['shipping_zone_code'] . " " . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
-        if ($info['shipping_code'] === 'glavpunktpost.glavpunktpost') {
+        if ($info['shipping_code'] === 'glavpunktpochta.glavpunktpochta') {
             // Выполнение условия если выбрана доставка "Почта РФ"
             $thisOrder['serv'] = 'почта';
             $thisOrder['pochta'] = [
-                'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
+                'address' => $info['shipping_zone'] . " Россия," . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
-        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            // Выполнение условия если выбрана доставка "Выдача"
-            $thisOrder['serv'] = 'выдача';
-            $thisOrder['dst_punkt_id'] = $punktId;
+        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId['id'] !== null) {
+
+            if ($punktId['cityId'] !== "SPB" && $punktId['cityId'] !== "MSK") {
+                // Выполнение условия если выбрана доставка "выдача по РФ"
+                $thisOrder['serv'] = 'выдача по РФ';
+                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId['id'],
+                    'city_id' => $punktId['cityId']];
+            } else {
+                // Выполнение условия если выбрана доставка "выдача"
+                $thisOrder['serv'] = 'выдача';
+                $thisOrder['dst_punkt_id'] = $punktId['id'];
+
+            }
         }
+
 
         // возвращаем массив с параметрами данного заказа для вгрузки в Главпункт
         return $thisOrder;
