@@ -60,8 +60,10 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId['id,cityId'] = $this->findPoint($order_info['shipping_method']);
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
+                        $findId['id, cityId'] = $this->findPoint($order_info['shipping_method']);
+                        if (isset($findId['id, cityId'])) {
+                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
+                        }
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
@@ -629,8 +631,12 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 // т.к. в заказе есть возможность обрезания данной строки
                 // и мы сравниваем исключительно по имеющемуся
             ) {
-                return $punktAndCity = ['id' => $point['id'],
-                    'cityId' => $point['cityId']];
+                if (isset($point['id, cityId'])) {
+                    return $punktAndCity = [
+                        'id' => $point['id'],
+                        'cityId' => $point['cityId']
+                    ];
+                }
             }
         }
 
