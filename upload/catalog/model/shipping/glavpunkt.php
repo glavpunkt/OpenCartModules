@@ -120,17 +120,17 @@ EOD;
             $quote_text .= '<script type="text/javascript">
               ' . $script . '
               
-            function serPunktsPriceWithFix(price, city){
-                var data = {
-                    "Санкт-Петербург": ' . $this->config->get('glavpunkt_price_spb') . ',                    
-                    "Москва": ' . $this->config->get('glavpunkt_price_msk') . '
-                };
-                if ( data[city] ){
-                    return data[city];
-                }else{
-                    return price;
-                }
-            }
+              function serPunktsPriceWithFix(price, city){
+                  var data = {
+                      "Санкт-Петербург": "' . $this->config->get('glavpunkt_price_spb') . '",                    
+                      "Москва": "' . $this->config->get('glavpunkt_price_msk') . '"
+                  };
+                  if ( data[city] ){
+                      return data[city];
+                  } else {
+                      return price;
+                  }
+              }
                                 
               function selectPunkt(punktInfo) {
                 var name = punktInfo.name;
