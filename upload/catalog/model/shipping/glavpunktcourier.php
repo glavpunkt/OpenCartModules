@@ -103,6 +103,7 @@ class ModelShippingGlavpunktcourier extends Model
               var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);
                 ' . $userSettingsCourier . '
                 $("#glavpunktcourier_price").html(tarif + " р.");
+                $("#title_text").html(selectedCity);
                 globalCity = city_obl.val();
                   $.ajax({
                     url: "' . $this->url->link("checkout/glavpunktcourier/setprice", '') . '",
@@ -188,11 +189,7 @@ EOD;
             }
             $quote_data['glavpunktcourier'] = array(
                 'code' => 'glavpunktcourier.glavpunktcourier',
-                'title' => (
-                $this->config->get('glavpunktcourier_delivery_name')
-                    ? $this->config->get('glavpunktcourier_delivery_name')
-                    : $title_text
-                ),
+                'title' => $this->language->get('text_description'). ' <br> ' .'<span id="title_text">'. $title_text .'</span>',
                 'cost' => $tarif,
                 'tax_class_id' => 0,
                 'text' => $selectCities . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
