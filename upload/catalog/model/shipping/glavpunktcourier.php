@@ -76,12 +76,12 @@ class ModelShippingGlavpunktcourier extends Model
             $selectCities .= '<script>
         function serCourierPriceWithFix(price, city){
             var data = {
-                "Санкт-Петербург": ' . $this->config->get('glavpunktcourier_price_spb') . ',                    
-                "Москва": ' . $this->config->get('glavpunktcourier_price_msk') . '
+                "Санкт-Петербург": "' . $this->config->get('glavpunktcourier_price_spb') . '",                    
+                "Москва": "' . $this->config->get('glavpunktcourier_price_msk') . '"
             };
             if ( data[city] ){
                 return data[city];
-            }else{
+            } else {
                 return price;
             }
         }
@@ -192,7 +192,7 @@ EOD;
                 'title' => $this->language->get('text_description'). ' <br> ' .'<span id="title_text">'. $title_text .'</span>',
                 'cost' => $tarif,
                 'tax_class_id' => 0,
-                'text' => $selectCities . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
+                'text' => $selectCities . " " . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
             );
 
             $method_data = array(
