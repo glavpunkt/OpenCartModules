@@ -120,7 +120,7 @@ class ModelExtensionShippingGlavpunkt extends Model
                   };
                   if (data[city]) {
                       return data[city];
-                  }else {
+                  } else {
                       return price;
                   }
               }
