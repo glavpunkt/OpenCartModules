@@ -65,17 +65,15 @@ class ControllerModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId = $this->findPoint($order_info['shipping_method']);
-                        if (!$findId) {
-                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-                            // с выводом предупреждения
-                            $this->session->data['error'][] =
-                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
-                            continue;
+                        if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
+                            // тут выполняется поиск нужного нам пункта выдачи
+                            $findId['id, cityId'] = $this->findPoint($order_info['shipping_method']);
+                            if (isset($findId['id, cityId'])) {
+                                $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
+                            } else {
+                                $orderListToGP[] = $this->ComposeOrder($order_info, $products);
+                            }
                         }
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
-                    } else {
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
                 }
 
@@ -704,7 +702,12 @@ class ControllerModuleGlavpunktorders extends Controller
                 // т.к. в заказе есть возможность обрезания данной строки
                 // и мы сравниваем исключительно по имеющемуся
             ) {
-                return $point['id'];
+                if (isset($point['id, cityId'])) {
+                    return $punktAndCity = [
+                        'id' => $point['id'],
+                        'cityId' => $point['cityId']
+                    ];
+                }
             }
         }
 
@@ -801,7 +804,6 @@ class ControllerModuleGlavpunktorders extends Controller
             ];
         }
 
-
         if ($info['shipping_code'] === 'glavpunktpochta.glavpunktpochta') {
             // Выполнение условия если выбрана доставка "Почта РФ"
             $thisOrder['serv'] = 'почта';
@@ -809,10 +811,18 @@ class ControllerModuleGlavpunktorders extends Controller
                 'address' => $info['shipping_zone'] . " " . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
-        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            // Выполнение условия если выбрана доставка "Выдача"
-            $thisOrder['serv'] = 'выдача';
-            $thisOrder['dst_punkt_id'] = $punktId;
+
+        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId['id'] !== null) {
+            if ($punktId['cityId'] !== "SPB" && $punktId['cityId'] !== "MSK") {
+                // Выполнение условия если выбрана доставка "выдача по РФ"
+                $thisOrder['serv'] = 'выдача по РФ';
+                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId['id'],
+                    'city_id' => $punktId['cityId']];
+            } else {
+                // Выполнение условия если выбрана доставка "выдача"
+                $thisOrder['serv'] = 'выдача';
+                $thisOrder['dst_punkt_id'] = $punktId['id'];
+            }
         }
 
         // возвращаем массив с параметрами данного заказа для вгрузки в Главпункт
