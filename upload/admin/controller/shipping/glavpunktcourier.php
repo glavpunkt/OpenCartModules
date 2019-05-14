@@ -134,15 +134,11 @@ class ControllerShippingGlavpunktcourier extends Controller {
             $data['glavpunktcourier_price_msk'] = $this->config->get('glavpunktcourier_price_msk');
         }
 
-
         if (isset($this->request->post['glavpunktcourier_simple_status'])) {
             $data['glavpunktcourier_simple_status'] = $this->request->post['glavpunktcourier_simple_status'];
         } else {
             $data['glavpunktcourier_simple_status'] = $this->config->get('glavpunktcourier_simple_status');
         }
-
-
-        
 
         if (isset($this->request->post['glavpunktcourier_sort_order'])) {
             $data['glavpunktcourier_sort_order'] = $this->request->post['glavpunktcourier_sort_order'];
@@ -153,6 +149,12 @@ class ControllerShippingGlavpunktcourier extends Controller {
             $data['glavpunktcourier_tarif_edit_code'] = $this->request->post['glavpunktcourier_tarif_edit_code'];
         } else {
             $data['glavpunktcourier_tarif_edit_code'] = $this->config->get('glavpunktcourier_tarif_edit_code');
+        }
+
+        if (isset($this->request->post['glavpunktcourier_days'])) {
+            $data['glavpunktcourier_days'] = $this->request->post['glavpunktcourier_days'];
+        } else {
+            $data['glavpunktcourier_days'] = $this->config->get('glavpunktcourier_days');
         }
 
         $data['header'] = $this->load->controller('common/header');

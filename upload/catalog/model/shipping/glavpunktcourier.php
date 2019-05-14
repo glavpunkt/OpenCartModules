@@ -38,6 +38,14 @@ class ModelShippingGlavpunktcourier extends Model
                 $cityTo = 'Санкт-Петербург';
             }
 
+            $courierDays = intval($this->config->get('glavpunktcourier_days'));
+            if ($courierDays < 0){
+                $courierDays = 0;
+                $date = date('Y-m-d');
+            } else {
+                $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+            }
+
             if (null !== $this->config->get('glavpunktcourier_tarif_edit_code')) {
                 $order = array("&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;");
                 $replace = array(" ", "<", ">", '"', "'");
@@ -68,12 +76,12 @@ class ModelShippingGlavpunktcourier extends Model
             $selectCities .= '<script>
         function serCourierPriceWithFix(price, city){
             var data = {
-                "Санкт-Петербург": ' . $this->config->get('glavpunktcourier_price_spb') . ',                    
-                "Москва": ' . $this->config->get('glavpunktcourier_price_msk') . '
+                "Санкт-Петербург": "' . $this->config->get('glavpunktcourier_price_spb') . '",                    
+                "Москва": "' . $this->config->get('glavpunktcourier_price_msk') . '"
             };
             if ( data[city] ){
                 return data[city];
-            }else{
+            } else {
                 return price;
             }
         }
@@ -95,6 +103,7 @@ class ModelShippingGlavpunktcourier extends Model
               var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);
                 ' . $userSettingsCourier . '
                 $("#glavpunktcourier_price").html(tarif + " р.");
+                $("#title_text").html(selectedCity);
                 globalCity = city_obl.val();
                   $.ajax({
                     url: "' . $this->url->link("checkout/glavpunktcourier/setprice", '') . '",
@@ -129,7 +138,7 @@ class ModelShippingGlavpunktcourier extends Model
                 $inputs = <<<EOD
                 <br><br>
                 <label for="glavpunktcourier_date">Дата доставки</label>
-                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"><br><br>
+                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date" value="$date" min="$date"><br><br>
                  <label for="glavpunktcourier_time">Интервал доставки</label>
                 <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00">                
 EOD;
@@ -180,14 +189,10 @@ EOD;
             }
             $quote_data['glavpunktcourier'] = array(
                 'code' => 'glavpunktcourier.glavpunktcourier',
-                'title' => (
-                $this->config->get('glavpunktcourier_delivery_name')
-                    ? $this->config->get('glavpunktcourier_delivery_name')
-                    : $title_text
-                ),
+                'title' => $this->language->get('text_description'). ' <br> ' .'<span id="title_text">'. $title_text .'</span>',
                 'cost' => $tarif,
                 'tax_class_id' => 0,
-                'text' => $selectCities . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
+                'text' => $selectCities . " " . '<span id="glavpunktcourier_price">' . $tarif . ' ' . $this->session->data['currency'] . '</span>' . $inputs
             );
 
             $method_data = array(
