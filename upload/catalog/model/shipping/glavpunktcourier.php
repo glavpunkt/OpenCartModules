@@ -38,6 +38,14 @@ class ModelShippingGlavpunktcourier extends Model
                 $cityTo = 'Санкт-Петербург';
             }
 
+            $courierDays = intval($this->config->get('glavpunktcourier_days'));
+            if ($courierDays < 0){
+                $courierDays = 0;
+                $date = date('Y-m-d');
+            } else {
+                $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+            }
+
             if (null !== $this->config->get('glavpunktcourier_tarif_edit_code')) {
                 $order = array("&nbsp;", "&lt;", "&gt;", "&amp;", "&quot;", "&apos;");
                 $replace = array(" ", "<", ">", '"', "'");
@@ -129,7 +137,7 @@ class ModelShippingGlavpunktcourier extends Model
                 $inputs = <<<EOD
                 <br><br>
                 <label for="glavpunktcourier_date">Дата доставки</label>
-                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date"><br><br>
+                <input type="date" class="datetimeinputs" name="glavpunktcourier_date" id="glavpunktcourier_date" value="$date" min="$date"><br><br>
                  <label for="glavpunktcourier_time">Интервал доставки</label>
                 <input type="text" class="datetimeinputs" name="glavpunktcourier_time" id="glavpunktcourier_time" value="10:00 - 18:00">                
 EOD;

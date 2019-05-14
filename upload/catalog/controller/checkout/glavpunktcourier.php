@@ -16,6 +16,18 @@ class ControllerCheckoutGlavpunktCourier extends Controller
         $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['text'] = $this->request->post['price'];
         $this->session->data['selected_city'] = $this->request->post['info'];
         $this->session->data['courierreloaded'] = true;
+        $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
+        if ($courierDays < 0){
+            $courierDays = 0;
+            $date = date('Y-m-d');
+        } else {
+            $date = date('d.m.Y', strtotime(' + '.$courierDays.' day'));
+        }
+        $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'] =
+            $this->request->post['type'] . ' <br>' . $this->request->post['info'] .
+            '<br>Дата доставки: ' . $date .
+            '<br>Время доставки: ' . "10:00 - 18:00";
+        echo $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'];
 
         exit;
     }
