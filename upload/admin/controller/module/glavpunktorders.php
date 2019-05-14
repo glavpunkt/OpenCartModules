@@ -802,11 +802,11 @@ class ControllerModuleGlavpunktorders extends Controller
         }
 
 
-        if ($info['shipping_code'] === 'glavpunktpost.glavpunktpost') {
+        if ($info['shipping_code'] === 'glavpunktpochta.glavpunktpochta') {
             // Выполнение условия если выбрана доставка "Почта РФ"
             $thisOrder['serv'] = 'почта';
             $thisOrder['pochta'] = [
-                'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
+                'address' => $info['shipping_zone'] . " " . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
