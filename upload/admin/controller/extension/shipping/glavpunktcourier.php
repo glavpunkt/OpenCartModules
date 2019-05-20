@@ -53,9 +53,13 @@ class ControllerExtensionShippingGlavpunktcourier extends Controller
 
         $data['text_enabled'] = $this->language->get('text_enabled');
         $data['text_disabled'] = $this->language->get('text_disabled');
+
+        $data['simple_text_enabled'] = $this->language->get('simple_text_enabled');
+        $data['simple_text_disabled'] = $this->language->get('simple_text_disabled');
+
         $data['text_yes'] = $this->language->get('text_yes');
         $data['text_no'] = $this->language->get('text_no');
-        $data['text_edit'] = $this->language->get('text_edit');
+        $data['text_edit'] = $this->language->get('text_edit'); 
 
 
         $data['entry_from_city_code_id'] = $this->language->get('entry_from_city_code_id');
@@ -125,7 +129,6 @@ class ControllerExtensionShippingGlavpunktcourier extends Controller
             $data['glavpunktcourier_weight'] = $this->config->get('glavpunktcourier_weight');
         }
 
-
         if (isset($this->request->post['glavpunktcourier_status'])) {
             $data['glavpunktcourier_status'] = $this->request->post['glavpunktcourier_status'];
         } else {
@@ -155,11 +158,18 @@ class ControllerExtensionShippingGlavpunktcourier extends Controller
             $data['glavpunktcourier_price_msk'] = $this->config->get('glavpunktcourier_price_msk');
         }
 
+        if (isset($this->request->post['glavpunktcourier_simple_status'])) {
+            $data['glavpunktcourier_simple_status'] = $this->request->post['glavpunktcourier_simple_status'];
+        } else {
+            $data['glavpunktcourier_simple_status'] = $this->config->get('glavpunktcourier_simple_status');
+        }
+
         if (isset($this->request->post['glavpunktcourier_days'])) {
             $data['glavpunktcourier_days'] = $this->request->post['glavpunktcourier_days'];
         } else {
             $data['glavpunktcourier_days'] = $this->config->get('glavpunktcourier_days');
         }
+
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');

@@ -2,6 +2,9 @@
 // Heading
 $_['heading_title']       = "Главпункт - курьерская доставка";
 
+$_['simple_text_enabled']    = 'Установлен';
+$_['simple_text_disabled']    = 'Не установлен';
+
 // Text
 $_['text_shipping']       = 'Доставка';
 $_['text_success']        = 'Настройки модуля Главпункт обновлены!';
