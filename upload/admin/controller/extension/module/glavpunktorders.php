@@ -62,7 +62,14 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                         // тут выполняется поиск нужного нам пункта выдачи
                         $findId['id, cityId'] = $this->findPoint($order_info['shipping_method']);
                         if (isset($findId['id, cityId'])) {
-                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
+                            if (!$findId) {
+                                // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
+                                // с выводом предупреждения
+                                $this->session->data['error'][] =
+                                    "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
+                                continue;
+                            }
+                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
                         }
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
