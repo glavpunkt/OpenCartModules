@@ -8,6 +8,9 @@ $_['text_success']        = 'Настройки модуля Главпункт 
 $_['text_edit']        = 'Редактирование';
 $_['text_extension']	 = 'Расширения';
 
+$_['simple_text_enabled']    = 'Установлен';
+$_['simple_text_disabled']    = 'Не установлен';
+
 
 $_['text_titlem']         = "Для работы модуля вам необходимо быть клиентом <a href=\"https://glavpunkt.ru/\" target=\"_blank\">glavpunkt.ru</a>";
 

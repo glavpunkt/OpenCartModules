@@ -94,7 +94,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
         }
 
         $(function(){
-          $(\'.glavpunkt-courier\').on(\'change\', function(e){
+          $(\'.glavpunkt-courier\').on(\'change\', function(e, firstCall){
             var itemsPrice = ' . $this->cart->getTotal() . ';
             var city_obl = $(e.currentTarget); 
             var cityFrom = "' . $cityFrom . '";
@@ -115,16 +115,26 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                     type: "post",
                     data: {price:tarif, type:\'Курьерская доставка Главпункт\', info:city_obl.val()},
                     dataType: \'html\',
-                    success: function(html) {
+                    success: function(html) {'; 
                      /*location.reload();*/
+                      if ($this->config->get('glavpunktcourier_simple_status') == 1) {// если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
+                            $selectCities .= 'if (!firstCall) {
+                          $("input[value=\'glavpunktcourier.glavpunktcourier\']").click();                          
+                          reloadAll();                         
+                        }';
                     }
+                    $selectCities .= '}
                   });
-                }
-              });
-          }).trigger("change");
-        });
+                }              
+            });
+        })';
+            if ($this->config->get('glavpunktcourier_simple_status') == 1) {
+                $selectCities .= '.trigger("change", ["true"]);';// если установлен симпл, нам потребуется передать параметр, т.к 1 вызов trigger выполнится при загрузке страницы, нас будет интересовать второй, для вызова reloadAll();, иначе получим бесконечную перезагрузку
+            } else {
+                $selectCities .= '.trigger("change");';
+            }
+            $selectCities .= '})
         </script>';
-
 
             // если установлен модуль Simple то мы не будем выводить дополнительные поля
             // т.к. они замечательно выводятся в самом модуле
