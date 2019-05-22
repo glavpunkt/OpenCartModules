@@ -66,7 +66,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                             // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
                             // с выводом предупреждения
                             $this->session->data['error'][] =
-                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId . "<br>" . $order_info['shipping_method'];
+                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
                             continue;
                         }
 
