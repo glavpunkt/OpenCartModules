@@ -54,6 +54,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 $orderListToGP = [];
                 $this->data['fullListPVZ'] = $this->getPVZfromRussia();
                 $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['fullListPVZ']);
+                $this->data['listPvzIdCity'] = $this->getPVZfromRussia();
                 // получаем детально о каждом заказе
                 foreach ($this->request->post['selected'] as $orderId) {
                     $order_info = $this->model_sale_order->getOrder($orderId);
@@ -68,6 +69,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                                 "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
                             continue;
                         }
+
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
@@ -589,7 +591,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://glavpunkt.ru/punkts-rf.json'
+            CURLOPT_URL => 'https://glavpunkt.ru/punkts-rf.json'
         ]);
         $answer = curl_exec($curl);
         curl_close($curl);
@@ -611,27 +613,19 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         preg_match_all('/([^<br>]+)/', $text, $params);
         // если количество полей недостаточно, значит информация не полноценна
         // и данное поле мы рассматривать не можем
-        if (count($params[0]) < 6) {
+        if (count($params[0]) < 5) {
             return false;
         }
         // поле выбранного города
         $city = trim($params[0][1]);
-        // если это СПб или МСК, то есть поле метро, которое немного сбивает порядок
-        if ($city === 'Санкт-Петербург' || $city === 'Москва') {
-            $phone = trim($params[0][3]);
-            $address = trim($params[0][5]);
-        } else {
-            $phone = trim($params[0][2]);
-            $address = trim($params[0][4]);
-        }
+        $phone = trim($params[0][2]);
+        $phone = str_replace('Телефон: ', '', $phone);
         // далее мы идём по полному списку пунктов выдачи (по СПб,МСК и России) и находим подходящее
         foreach ($this->data['fullListPVZ'] as $point) {
             // @todo определить кол-во символов в адресе и сравить по кол-ву
-            $addressLength = strlen($address);
             if (
                 $city === trim($point['city']) &&
-                $phone === trim($point['phone']) &&
-                substr($address, 0, $addressLength) === substr(trim($point['address']), 0, $addressLength)
+                $phone === trim($point['phone'])
                 // данное поле сравнивается по количеству символов в адресе хранимом в заказе,
                 // т.к. в заказе есть возможность обрезания данной строки
                 // и мы сравниваем исключительно по имеющемуся
@@ -641,6 +635,25 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         }
 
         // если в ходе перебора найти не удалось, то возвращаем false
+        return false;
+
+    }
+
+    /**
+     * Поиск city_id по переданному пункту
+     *
+     * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком
+     *
+     * @param string|bool $punktId
+     */
+    private function findCityId($punktId)
+    {
+        foreach ($this->data['listPvzIdCity'] as $st) {
+            if ($punktId === trim($st['id'])) {
+                return $st['city_id'];
+            }
+        }
+
         return false;
     }
 
@@ -663,6 +676,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 'price' => $item['total'],
                 'barcode' => '',
                 'num' => $item['quantity']
+
             ];
         }
         // получаем общие параметры заказа
@@ -724,20 +738,30 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 'city' => $info['shipping_city'],
                 'date' => $delivery_date, // delivery_date
                 'time' => $delivery_time, // delivery_from_hour , delivery_to_hour
-                'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
+                'address' => $info['shipping_zone_code'] . " " . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
-        if ($info['shipping_code'] === 'glavpunktpost.glavpunktpost') {
+        if ($info['shipping_code'] === 'glavpunktpochta.glavpunktpochta') {
             // Выполнение условия если выбрана доставка "Почта РФ"
             $thisOrder['serv'] = 'почта';
             $thisOrder['pochta'] = [
-                'address' => $info['shipping_address_1'] . " " . $info['shipping_address_2']
+                'address' => $info['shipping_zone'] . " Россия," . $info['shipping_address_1'] . " " . $info['shipping_address_2']
             ];
         }
+
+        $cityId = $this->findCityId($punktId);
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            // Выполнение условия если выбрана доставка "Выдача"
-            $thisOrder['serv'] = 'выдача';
-            $thisOrder['dst_punkt_id'] = $punktId;
+            if ($info['shipping_city'] === "Санкт-Петербург" || $info['shipping_city'] === "Москва") {
+                // Выполнение условия если выбрана доставка "выдача"
+                $thisOrder['serv'] = 'выдача';
+                $thisOrder['dst_punkt_id'] = $punktId;
+
+            } else {
+                //Выполнение условия если выбрана доставка "выдача по РФ"
+                $thisOrder['serv'] = 'выдача по РФ';
+                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
+                    'city_id' => $cityId];
+            }
         }
 
         // возвращаем массив с параметрами данного заказа для вгрузки в Главпункт
