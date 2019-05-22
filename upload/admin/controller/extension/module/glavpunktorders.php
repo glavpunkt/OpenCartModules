@@ -54,7 +54,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 $orderListToGP = [];
                 $this->data['fullListPVZ'] = $this->getPVZfromRussia();
                 $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['fullListPVZ']);
-                $this->data['listPvzIdCity'] = $this->getPVZId();
+                $this->data['listPvzIdCity'] = $this->getPVZfromRussia();
                 // получаем детально о каждом заказе
                 foreach ($this->request->post['selected'] as $orderId) {
                     $order_info = $this->model_sale_order->getOrder($orderId);
@@ -66,9 +66,10 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                             // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
                             // с выводом предупреждения
                             $this->session->data['error'][] =
-                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
+                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId . "<br>" . $order_info['shipping_method'];
                             continue;
                         }
+
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
@@ -577,26 +578,6 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     }
 
     /**
-     * Получение информации пунктах выдачи по РФ посредством cURL запроса
-     *
-     * для опредение id города
-     *
-     * @return mixed
-     */
-    private function getPVZId()
-    {
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'https://glavpunkt.ru/punkts-rf.json'
-        ]);
-        $answer = curl_exec($curl);
-        curl_close($curl);
-
-        return json_decode($answer, true);
-    }
-
-    /**
      * Получение списка пунктов выдачи по России
      *
      * для опредение пункта выдачи по имеющейся информации в заказе
@@ -639,11 +620,9 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $city = trim($params[0][1]);
         $phone = trim($params[0][2]);
         $phone = str_replace('Телефон: ', '', $phone);
-
         // далее мы идём по полному списку пунктов выдачи (по СПб,МСК и России) и находим подходящее
         foreach ($this->data['fullListPVZ'] as $point) {
             // @todo определить кол-во символов в адресе и сравить по кол-ву
-
             if (
                 $city === trim($point['city']) &&
                 $phone === trim($point['phone'])
@@ -657,6 +636,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
         // если в ходе перебора найти не удалось, то возвращаем false
         return false;
+
     }
 
     /**
@@ -669,16 +649,13 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     private function findCityId($punktId)
     {
         foreach ($this->data['listPvzIdCity'] as $st) {
-
             if ($punktId === trim($st['id'])) {
                 return $st['city_id'];
-
             }
         }
 
         return false;
     }
-
 
     /**
      * Компоновка массива заказа под вид вгрузки в Главпункт
@@ -774,7 +751,6 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
         $cityId = $this->findCityId($punktId);
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-
             if ($info['shipping_city'] === "Санкт-Петербург" || $info['shipping_city'] === "Москва") {
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
