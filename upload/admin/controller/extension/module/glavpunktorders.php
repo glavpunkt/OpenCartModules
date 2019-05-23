@@ -47,8 +47,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
                 // данный массив будет содержать список всех заказов для передачи в Главпункт
                 $orderListToGP = [];
-                $this->data['fullListPVZ'] = $this->getPVZfromRussia();
-                $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['fullListPVZ']);
+                $this->data['listPvzIdCity'] = $this->getPVZfromRussia();
+                $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['listPvzIdCity']);
 
                 // получаем детально о каждом заказе
                 foreach ($this->request->post['selected'] as $orderId) {
@@ -56,14 +56,20 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId['id, cityId'] = $this->findPoint($order_info['shipping_method']);
-                        if (isset($findId['id, cityId'])) {
-                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId['id, cityId']);
-                        } else {
-                            $orderListToGP[] = $this->ComposeOrder($order_info, $products);
+                        $findId = $this->findPoint($order_info['shipping_method']);
+                        if (!$findId) {
+                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
+                            // с выводом предупреждения
+                            $this->session->data['error'][] =
+                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
+                            continue;
                         }
+                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+                    } else {
+                        $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
                 }
+
 
                 // заполняем основную информация
                 $invoiceInfo = [
@@ -647,7 +653,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'http://glavpunkt.ru/punkts-rf.json'
+            CURLOPT_URL => 'https://glavpunkt.ru/punkts-rf.json'
         ]);
         $answer = curl_exec($curl);
         curl_close($curl);
@@ -667,47 +673,46 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     {
         // разбиваем текст на поля по тегу <br>
         preg_match_all('/([^<br>]+)/', $text, $params);
-
         // если количество полей недостаточно, значит информация не полноценна
         // и данное поле мы рассматривать не можем
-        if (count($params[0]) < 6) {
+        if (count($params[0]) < 5) {
             return false;
         }
-
         // поле выбранного города
         $city = trim($params[0][1]);
-
-        // если это СПб или МСК, то есть поле метро, которое немного сбивает порядок
-        if ($city === 'Санкт-Петербург' || $city === 'Москва') {
-            $phone = trim($params[0][3]);
-            $address = trim($params[0][5]);
-        } else {
-            $phone = trim($params[0][2]);
-            $address = trim($params[0][4]);
-        }
-
+        $phone = trim($params[0][2]);
+        $phone = str_replace('Телефон: ', '', $phone);
         // далее мы идём по полному списку пунктов выдачи (по СПб,МСК и России) и находим подходящее
         foreach ($this->data['fullListPVZ'] as $point) {
             // @todo определить кол-во символов в адресе и сравить по кол-ву
-            $addressLength = strlen($address);
             if (
                 $city === trim($point['city']) &&
-                $phone === trim($point['phone']) &&
-                substr($address, 0, $addressLength) === substr(trim($point['address']), 0, $addressLength)
+                $phone === trim($point['phone'])
                 // данное поле сравнивается по количеству символов в адресе хранимом в заказе,
                 // т.к. в заказе есть возможность обрезания данной строки
                 // и мы сравниваем исключительно по имеющемуся
             ) {
-                if (isset($point['id, cityId'])) {
-                    return $punktAndCity = [
-                        'id' => $point['id'],
-                        'cityId' => $point['cityId']
-                    ];
-                }
+                return $point['id'];
             }
         }
-
         // если в ходе перебора найти не удалось, то возвращаем false
+        return false;
+    }
+
+    /**
+     * Поиск city_id по переданному пункту
+     *
+     * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком
+     *
+     * @param string|bool $punktId
+     */
+    private function findCityId($punktId)
+    {
+        foreach ($this->data['listPvzIdCity'] as $st) {
+            if ($punktId === trim($st['id'])) {
+                return $st['city_id'];
+            }
+        }
         return false;
     }
 
@@ -809,16 +814,17 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             ];
         }
 
-        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId['id'] !== null) {
-            if ($punktId['cityId'] !== "SPB" && $punktId['cityId'] !== "MSK") {
-                // Выполнение условия если выбрана доставка "выдача по РФ"
-                $thisOrder['serv'] = 'выдача по РФ';
-                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId['id'],
-                    'city_id' => $punktId['cityId']];
-            } else {
+        $cityId = $this->findCityId($punktId);
+        if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
+            if (!$cityId) {
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
-                $thisOrder['dst_punkt_id'] = $punktId['id'];
+                $thisOrder['dst_punkt_id'] = $punktId;
+            } else {
+                //Выполнение условия если выбрана доставка "выдача по РФ"
+                $thisOrder['serv'] = 'выдача по РФ';
+                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
+                    'city_id' => $cityId];
             }
         }
 
