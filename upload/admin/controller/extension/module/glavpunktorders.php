@@ -52,9 +52,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 $this->load->model('sale/order');
                 // данный массив будет содержать список всех заказов для передачи в Главпункт
                 $orderListToGP = [];
-                $this->data['fullListPVZ'] = $this->getPVZfromRussia();
-                $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['fullListPVZ']);
                 $this->data['listPvzIdCity'] = $this->getPVZfromRussia();
+                $this->data['fullListPVZ'] = array_merge($this->data['pvz'], $this->data['listPvzIdCity']);
                 // получаем детально о каждом заказе
                 foreach ($this->request->post['selected'] as $orderId) {
                     $order_info = $this->model_sale_order->getOrder($orderId);
@@ -751,7 +750,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
         $cityId = $this->findCityId($punktId);
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            if ($info['shipping_city'] === "Санкт-Петербург" || $info['shipping_city'] === "Москва") {
+            if (!$cityId) {
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
                 $thisOrder['dst_punkt_id'] = $punktId;
