@@ -723,7 +723,6 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      * @param $info
      * @param $items
      * @param int $punktId
-     * @param int $cityId
      * @return array
      */
     private function ComposeOrder($info, $items, $punktId = null)
