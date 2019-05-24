@@ -370,6 +370,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url,
                     $this->isHttps
                 ),
+                'statusPost' => $this->getStatus($result['order_id']),
+                'trackingUrl' => $this->getTrackingUrl($result['order_id']),
                 'edit' => $this->url->link(
                     'sale/order/edit',
                     'user_token=' . $this->session->data['user_token'] . '&order_id=' . $result['order_id'] . $url,
@@ -531,6 +533,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $this->data['column_total'] = $this->language->get('column_total');
         $this->data['column_date_added'] = $this->language->get('column_date_added');
         $this->data['column_date_modified'] = $this->language->get('column_date_modified');
+        $this->data['column_tracking'] = $this->language->get('column_tracking');
     }
 
     /**
@@ -654,6 +657,66 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         }
 
         return false;
+    }
+
+    /**
+     * Показывает статус заказа
+     *
+     * @param string $sku номер заказа
+     * @return string статус заказа
+     */
+    private function getStatus($sku)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'https://glavpunkt.ru/api-1.1/pkg_status?login=' . $this->config->get('module_glavpunktorders_login') .
+                '&token=' . $this->config->get('module_glavpunktorders_token') . '&sku=' . $sku
+        ]);
+        $answer = curl_exec($curl);
+        curl_close($curl);
+        $answer = json_decode($answer, true);
+        $status =  implode(",", $answer);
+        switch ($status) {
+            case 'not found':
+                $status = "Нет в системе главпункт";
+                break;
+            case 'none':
+                $status = "Посылка не передана";
+                break;
+            case 'transfering':
+                $status = "Посылка доставляется";
+                break;
+            case 'completed':
+                $status = "Посылка выдана";
+                break;
+            case 'awaiting_return':
+                $status = "На возврат";
+                break;
+        }
+        return $status;
+    }
+
+    /**
+     * Возвращяет ссылку с ОТСЛЕЖИВАНИЕ ЗАКАЗА на сайте glavpunkt
+     *
+     * @param string $sku номер заказа
+     * @return string
+     */
+    private function getTrackingUrl($sku)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'https://glavpunkt.ru/api/track_code?login=' . $this->config->get('module_glavpunktorders_login') .
+                '&token=' . '&token=' . $this->config->get('module_glavpunktorders_token') . '&sku=' . $sku,
+            CURLOPT_USERAGENT => 'opencart-3'
+        ]);
+        $answer = curl_exec($curl);
+        curl_close($curl);
+        $answer = json_decode($answer, true);
+        $trackUrl =  'https://glavpunkt.ru/t/' . implode(",", $answer);
+        return $trackUrl;
     }
 
     /**
