@@ -34,6 +34,7 @@ $_['column_location'] = 'Местоположение';
 $_['column_reference'] = 'Ссылка';
 $_['column_action'] = 'Действие';
 $_['column_weight'] = 'Вес товара';
+$_['column_tracking'] = 'Отслеживание товара';
 // Text
 $_['text_module'] = 'Модули';
 $_['text_success'] = 'Настройки модуля обновлены!';
