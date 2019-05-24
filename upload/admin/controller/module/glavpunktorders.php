@@ -594,6 +594,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $this->data['column_total'] = $this->language->get('column_total');
         $this->data['column_date_added'] = $this->language->get('column_date_added');
         $this->data['column_date_modified'] = $this->language->get('column_date_modified');
+        $this->data['column_tracking'] = $this->language->get('column_tracking');
     }
 
     /**
