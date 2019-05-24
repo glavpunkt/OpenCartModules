@@ -192,7 +192,7 @@
                                 <?php } else { ?>
                                 <a href="<?php echo $sort_date_modified; ?>"><?php echo $column_date_modified; ?></a>
                                 <?php } ?></td>
-                            <td class="text-left"><?php echo $column_tracking; ?>
+                            <td class="text-center"><?php echo $column_tracking; ?>
                             </td>
                             <td></td>
                         </tr>
@@ -214,7 +214,7 @@
                             <td class="text-right"><?php echo $order['total']; ?></td>
                             <td class="text-left"><?php echo $order['date_added']; ?></td>
                             <td class="text-left"><?php echo $order['date_modified']; ?></td>
-                            <td class="text-right"><?php echo $order['tracking']; ?></td>
+                            <td class="text-left"><?php echo $order['statusPost']; ?> - <a href="<?php echo $order['trackingUrl']; ?>" target="_blank">трекинг</a></td>
                             <td class="text-right"><?php echo $order['shipping']; ?></td>
                         </tr>
                         <?php } ?>

@@ -405,7 +405,8 @@ class ControllerModuleGlavpunktorders extends Controller
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
                     $this->isHttps
                 ),
-                'tracking' => $this->getTracking($result['order_id']),
+                'statusPost' => $this->getStatus($result['order_id']),
+                'trackingUrl' => $this->getTrackingUrl($result['order_id']),
                 'edit' => $this->url->link(
                     'sale/order/edit',
                     'token=' . $this->session->data['token'] . '&order_id=' . $result['order_id'] . $url,
@@ -723,12 +724,14 @@ class ControllerModuleGlavpunktorders extends Controller
      * @param string $sku номер заказа
      * @return string статус заказа
      */
-    private function getTracking($sku)
+    private function getStatus($sku)
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'https://glavpunkt.ru/api-1.1/pkg_status?login=' . $this->config->get('glavpunktorders_login') . '&token=' . $this->config->get('glavpunktorders_token') . '&sku=' . $sku,
+            CURLOPT_URL => '
+            https://glavpunkt.ru/api-1.1/pkg_status?login=' . $this->config->get('glavpunktorders_login') .
+                '&token=' . $this->config->get('glavpunktorders_token') . '&sku=' . $sku,
             CURLOPT_USERAGENT => 'opencart-2.1'
         ]);
         $answer = curl_exec($curl);
@@ -737,7 +740,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $status =  implode(",", $answer);
         switch ($status) {
             case 'not found':
-                $status = "Посылка не найдена";
+                $status = "";
                 break;
             case 'none':
                 $status = "Посылка не передана";
@@ -754,6 +757,28 @@ class ControllerModuleGlavpunktorders extends Controller
         }
 
         return $status;
+    }
+
+    /**
+     * Возвращяет ссылку с ОТСЛЕЖИВАНИЕ ЗАКАЗА на сайте glavpunkt
+     *
+     * @param string $sku номер заказа
+     * @return string
+     */
+    private function getTrackingUrl($sku)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'https://glavpunkt.ru/api/track_code?login=' . $this->config->get('glavpunktorders_login') .
+                '&token=' . '&token=' . $this->config->get('glavpunktorders_token') . '&sku=' . $sku,
+            CURLOPT_USERAGENT => 'opencart-2.1'
+        ]);
+        $answer = curl_exec($curl);
+        curl_close($curl);
+        $answer = json_decode($answer, true);
+        $trackUrl =  'https://glavpunkt.ru/t/' . implode(",", $answer);
+        return $trackUrl;
     }
 
     /**
