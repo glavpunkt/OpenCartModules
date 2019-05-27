@@ -65,15 +65,21 @@ class ControllerModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId = $this->findPoint($order_info['shipping_method']);
-                        if (!$findId) {
-                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-                            // с выводом предупреждения
+                        try {
+                            $findId = $this->findPoint($order_info['shipping_method']);
+                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+                        } catch (Exception $e) {
                             $this->session->data['error'][] =
                                 "Выводим предупреждение, что пункт выдачи не найден в заказе №" . $orderId;
-                            continue;
                         }
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+//                            if (!$findId) {
+//                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
+//                            // с выводом предупреждения
+//                            $this->session->data['error'][] =
+//                                "Выводим предупреждение, что пункт выдачи не найден в заказе №" . $orderId;
+//                            continue;
+//                        }
+
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
@@ -671,7 +677,7 @@ class ControllerModuleGlavpunktorders extends Controller
      * и сравниваем их со списком
      *
      * @param string $text
-     * @return bool|string id пункта, если такой есть
+     * @return string id пункта
      */
     private function findPoint($text)
     {
@@ -679,7 +685,7 @@ class ControllerModuleGlavpunktorders extends Controller
         preg_match_all('/([^<br>]+)/', $text, $params);
 
         //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
-        // и сравниваем с городом, номером телефона и городом находим id нужного пункта
+        //сравниваем наш текст разбитый по полям с городом и номером телефона. Находим id пункта
         foreach ($this->data['fullListPVZ'] as $point) {
             if (
                 trim($params[0][1]) === trim($point['city']) &&
@@ -698,8 +704,6 @@ class ControllerModuleGlavpunktorders extends Controller
                 return $point['id'];
             }
         }
-
-        return false;
     }
 
     /**
@@ -708,7 +712,7 @@ class ControllerModuleGlavpunktorders extends Controller
      * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком
      *
      * @param string $punktId
-     * @return string|bool статус заказа, если такой есть
+     * @return string статус заказа
      */
     private function findCityId($punktId)
     {
@@ -717,8 +721,6 @@ class ControllerModuleGlavpunktorders extends Controller
                 return $st['city_id'];
             }
         }
-
-        return false;
     }
 
     /**
@@ -881,8 +883,10 @@ class ControllerModuleGlavpunktorders extends Controller
             ];
         }
 
-        $cityId = $this->findCityId($punktId);
+
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
+            try {
+            $cityId = $this->findCityId($punktId);
             if (!$cityId) {
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
@@ -892,6 +896,8 @@ class ControllerModuleGlavpunktorders extends Controller
                 $thisOrder['serv'] = 'выдача по РФ';
                 $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
                     'city_id' => $cityId];
+            }
+            } catch (Exception $e) {
             }
         }
 
