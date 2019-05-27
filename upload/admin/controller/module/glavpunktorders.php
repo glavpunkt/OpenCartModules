@@ -745,7 +745,7 @@ class ControllerModuleGlavpunktorders extends Controller
         $status =  implode(",", $answer);
         switch ($status) {
             case 'not found':
-                $status = "";
+                $status = "Нет в системе Главпункт";
                 break;
             case 'none':
                 $status = "Посылка не передана";
