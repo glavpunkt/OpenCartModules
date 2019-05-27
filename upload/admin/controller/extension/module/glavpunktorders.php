@@ -608,35 +608,37 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      * и сравниваем их со списком
      *
      * @param string $text
-     * @return bool|string id пункта, если такой есть
+     * @return string id пункта
+     * @throws Exception
      */
     private function findPoint($text)
     {
         // разбиваем текст на поля по тегу <br>
         preg_match_all('/([^<br>]+)/', $text, $params);
-        //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
-        // и сравниваем с городом, номером телефона и городом находим id нужного пункта
-        foreach ($this->data['fullListPVZ'] as $point) {
-            if (
-                trim($params[0][1]) === trim($point['city']) &&
-                str_replace('Телефон: ', '', trim($params[0][2])) === trim($point['phone'])
-            ) {
-                return $point['id'];
-            } elseif (
-                trim($params[0][3]) === trim($point['city']) &&
-                str_replace('Телефон: ', '', trim($params[0][4])) === trim($point['phone'])
-            ) {
-                return $point['id'];
-            } elseif (
-                trim($params[0][2]) === trim($point['city']) &&
-                str_replace('Телефон: ', '', trim($params[0][3])) === trim($point['phone'])
-            ) {
-                return $point['id'];
+        try {
+            //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
+            //сравниваем наш текст разбитый по полям с городом и номером телефона. Находим id пункта
+            foreach ($this->data['fullListPVZ'] as $point) {
+                if (
+                    trim($params[0][1]) === trim($point['city']) &&
+                    str_replace('Телефон: ', '', trim($params[0][2])) === trim($point['phone'])
+                ) {
+                    return $point['id'];
+                } elseif (
+                    trim($params[0][3]) === trim($point['city']) &&
+                    str_replace('Телефон: ', '', trim($params[0][4])) === trim($point['phone'])
+                ) {
+                    return $point['id'];
+                } elseif (
+                    trim($params[0][2]) === trim($point['city']) &&
+                    str_replace('Телефон: ', '', trim($params[0][3])) === trim($point['phone'])
+                ) {
+                    return $point['id'];
+                }
             }
+        } catch (Exception $e) {
+            return new Exception("Пункт не найден");
         }
-
-        //если в ходе перебора найти не удалось, то возвращаем false
-        return false;
     }
 
     /**
@@ -645,17 +647,20 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком
      *
      * @param string $punktId
-     * @return string|bool статус заказа, если такой есть
+     * @return string статус заказа
+     * @throws Exception
      */
     private function findCityId($punktId)
     {
-        foreach ($this->data['listPvzIdCity'] as $st) {
-            if ($punktId === trim($st['id'])) {
-                return $st['city_id'];
+        try {
+            foreach ($this->data['listPvzIdCity'] as $st) {
+                if ($punktId === trim($st['id'])) {
+                    return $st['city_id'];
+                }
             }
+        } catch (Exception $e) {
+            return new Exception("Пункт в Спб или МСК");
         }
-
-        return false;
     }
 
     /**
