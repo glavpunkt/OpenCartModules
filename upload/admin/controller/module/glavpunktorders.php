@@ -875,7 +875,6 @@ class ControllerModuleGlavpunktorders extends Controller
 
 
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            try {
             $cityId = $this->findCityId($punktId);
             if (!$cityId) {
                 // Выполнение условия если выбрана доставка "выдача"
@@ -886,8 +885,6 @@ class ControllerModuleGlavpunktorders extends Controller
                 $thisOrder['serv'] = 'выдача по РФ';
                 $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
                     'city_id' => $cityId];
-            }
-            } catch (Exception $e) {
             }
         }
 
