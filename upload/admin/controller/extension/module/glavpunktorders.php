@@ -806,20 +806,17 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         }
 
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            try {
-                $cityId = $this->findCityId($punktId);
-                if (!$cityId) {
-                    // Выполнение условия если выбрана доставка "выдача"
-                    $thisOrder['serv'] = 'выдача';
-                    $thisOrder['dst_punkt_id'] = $punktId;
+            $cityId = $this->findCityId($punktId);
+            if (!$cityId) {
+                // Выполнение условия если выбрана доставка "выдача"
+                $thisOrder['serv'] = 'выдача';
+                $thisOrder['dst_punkt_id'] = $punktId;
 
-                } else {
-                    //Выполнение условия если выбрана доставка "выдача по РФ"
-                    $thisOrder['serv'] = 'выдача по РФ';
-                    $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
-                        'city_id' => $cityId];
-                }
-            } catch (Exception $e) {
+            } else {
+                //Выполнение условия если выбрана доставка "выдача по РФ"
+                $thisOrder['serv'] = 'выдача по РФ';
+                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
+                    'city_id' => $cityId];
             }
         }
 
