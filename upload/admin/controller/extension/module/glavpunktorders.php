@@ -55,21 +55,18 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $order_info = $this->model_sale_order->getOrder($orderId);
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
-                        // тут выполняется поиск нужного нам пункта выдачи
-                        $findId = $this->findPoint($order_info['shipping_method']);
-                        if (!$findId) {
-                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-                            // с выводом предупреждения
+                        try {
+                            // тут выполняется поиск нужного нам пункта выдачи
+                            $findId = $this->findPoint($order_info['shipping_method']);
+                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+                        } catch (Exception $e) {
                             $this->session->data['error'][] =
                                 "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
-                            continue;
                         }
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
                 }
-
 
                 // заполняем основную информация
                 $invoiceInfo = [
@@ -672,35 +669,31 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      *
      * @param string $text
      * @return string id пункта
-     * @throws Exception
      */
     private function findPoint($text)
     {
         // разбиваем текст на поля по тегу <br>
         preg_match_all('/([^<br>]+)/', $text, $params);
-        try {
-            //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
-            //сравниваем наш текст разбитый по полям с городом и номером телефона. Находим id пункта
-            foreach ($this->data['fullListPVZ'] as $point) {
-                if (
-                    trim($params[0][1]) === trim($point['city']) &&
-                    str_replace('Телефон: ', '', trim($params[0][2])) === trim($point['phone'])
-                ) {
-                    return $point['id'];
-                } elseif (
-                    trim($params[0][3]) === trim($point['city']) &&
-                    str_replace('Телефон: ', '', trim($params[0][4])) === trim($point['phone'])
-                ) {
-                    return $point['id'];
-                } elseif (
-                    trim($params[0][2]) === trim($point['city']) &&
-                    str_replace('Телефон: ', '', trim($params[0][3])) === trim($point['phone'])
-                ) {
-                    return $point['id'];
-                }
+
+        //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
+        //сравниваем наш текст разбитый по полям с городом и номером телефона. Находим id пункта
+        foreach ($this->data['fullListPVZ'] as $point) {
+            if (
+                trim($params[0][1]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][2])) === trim($point['phone'])
+            ) {
+                return $point['id'];
+            } elseif (
+                trim($params[0][3]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][4])) === trim($point['phone'])
+            ) {
+                return $point['id'];
+            } elseif (
+                trim($params[0][2]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][3])) === trim($point['phone'])
+            ) {
+                return $point['id'];
             }
-        } catch (Exception $e) {
-            return new Exception("Пункт не найден");
         }
     }
 
@@ -711,18 +704,13 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      *
      * @param string $punktId
      * @return string статус заказа
-     * @throws Exception
      */
     private function findCityId($punktId)
     {
-        try {
-            foreach ($this->data['listPvzIdCity'] as $st) {
-                if ($punktId === trim($st['id'])) {
-                    return $st['city_id'];
-                }
+        foreach ($this->data['listPvzIdCity'] as $st) {
+            if ($punktId === trim($st['id'])) {
+                return $st['city_id'];
             }
-        } catch (Exception $e) {
-            return new Exception("Пункт в Спб или МСК");
         }
     }
 
@@ -885,17 +873,21 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             ];
         }
 
-        $cityId = $this->findCityId($punktId);
+
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
-            if (!$cityId) {
-                // Выполнение условия если выбрана доставка "выдача"
-                $thisOrder['serv'] = 'выдача';
-                $thisOrder['dst_punkt_id'] = $punktId;
-            } else {
-                //Выполнение условия если выбрана доставка "выдача по РФ"
-                $thisOrder['serv'] = 'выдача по РФ';
-                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
-                    'city_id' => $cityId];
+            try {
+                $cityId = $this->findCityId($punktId);
+                if (!$cityId) {
+                    // Выполнение условия если выбрана доставка "выдача"
+                    $thisOrder['serv'] = 'выдача';
+                    $thisOrder['dst_punkt_id'] = $punktId;
+                } else {
+                    //Выполнение условия если выбрана доставка "выдача по РФ"
+                    $thisOrder['serv'] = 'выдача по РФ';
+                    $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
+                        'city_id' => $cityId];
+                }
+            } catch (Exception $e) {
             }
         }
 
