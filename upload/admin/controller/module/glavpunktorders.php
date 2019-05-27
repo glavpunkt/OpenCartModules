@@ -72,14 +72,6 @@ class ControllerModuleGlavpunktorders extends Controller
                             $this->session->data['error'][] =
                                 "Выводим предупреждение, что пункт выдачи не найден в заказе №" . $orderId;
                         }
-//                            if (!$findId) {
-//                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-//                            // с выводом предупреждения
-//                            $this->session->data['error'][] =
-//                                "Выводим предупреждение, что пункт выдачи не найден в заказе №" . $orderId;
-//                            continue;
-//                        }
-
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
@@ -734,10 +726,8 @@ class ControllerModuleGlavpunktorders extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => '
-            https://glavpunkt.ru/api-1.1/pkg_status?login=' . $this->config->get('glavpunktorders_login') .
-                '&token=' . $this->config->get('glavpunktorders_token') . '&sku=' . $sku,
-            CURLOPT_USERAGENT => 'opencart-2.1'
+            CURLOPT_URL => 'https://glavpunkt.ru/api-1.1/pkg_status?login=' . $this->config->get('glavpunktorders_login') .
+                '&token=' . $this->config->get('glavpunktorders_token') . '&sku=' . $sku
         ]);
         $answer = curl_exec($curl);
         curl_close($curl);
