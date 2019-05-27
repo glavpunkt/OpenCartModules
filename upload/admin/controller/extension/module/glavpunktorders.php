@@ -60,16 +60,13 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $products = $this->model_sale_order->getOrderProducts($orderId);
                     if ($order_info['shipping_code'] === 'glavpunkt.glavpunkt') {
                         // тут выполняется поиск нужного нам пункта выдачи
-                        $findId = $this->findPoint($order_info['shipping_method']);
-                        if (!$findId) {
-                            // если пункт выдачи не был найден, то мы проото пропускаем данный заказ
-                            // с выводом предупреждения
+                        try {
+                            $findId = $this->findPoint($order_info['shipping_method']);
+                            $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
+                        } catch (Exception $e) {
                             $this->session->data['error'][] =
-                                "Выводим предупреждение, что пункт выдачи не найжен в заказе №" . $orderId;
-                            continue;
+                                "Выводим предупреждение, что пункт выдачи не найден в заказе №" . $orderId;
                         }
-
-                        $orderListToGP[] = $this->ComposeOrder($order_info, $products, $findId);
                     } else {
                         $orderListToGP[] = $this->ComposeOrder($order_info, $products);
                     }
@@ -607,46 +604,44 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      * заказ не сохраняет идентификатор пункта выдачи, поэтому мы разбиваем имеющееся поле на данные
      * и сравниваем их со списком
      *
-     * @param string|bool $text
+     * @param string $text
+     * @return string id пункта
      */
     private function findPoint($text)
     {
         // разбиваем текст на поля по тегу <br>
         preg_match_all('/([^<br>]+)/', $text, $params);
-        // если количество полей недостаточно, значит информация не полноценна
-        // и данное поле мы рассматривать не можем
-        if (count($params[0]) < 5) {
-            return false;
-        }
-        // поле выбранного города
-        $city = trim($params[0][1]);
-        $phone = trim($params[0][2]);
-        $phone = str_replace('Телефон: ', '', $phone);
-        // далее мы идём по полному списку пунктов выдачи (по СПб,МСК и России) и находим подходящее
+
+        //Идем по списку всех пунктов(пункты РФ, Спб, Мск)
+        //сравниваем наш текст разбитый по полям с городом и номером телефона. Находим id пункта
         foreach ($this->data['fullListPVZ'] as $point) {
-            // @todo определить кол-во символов в адресе и сравить по кол-ву
             if (
-                $city === trim($point['city']) &&
-                $phone === trim($point['phone'])
-                // данное поле сравнивается по количеству символов в адресе хранимом в заказе,
-                // т.к. в заказе есть возможность обрезания данной строки
-                // и мы сравниваем исключительно по имеющемуся
+                trim($params[0][1]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][2])) === trim($point['phone'])
+            ) {
+                return $point['id'];
+            } elseif (
+                trim($params[0][3]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][4])) === trim($point['phone'])
+            ) {
+                return $point['id'];
+            } elseif (
+                trim($params[0][2]) === trim($point['city']) &&
+                str_replace('Телефон: ', '', trim($params[0][3])) === trim($point['phone'])
             ) {
                 return $point['id'];
             }
         }
-
-        // если в ходе перебора найти не удалось, то возвращаем false
-        return false;
-
     }
 
     /**
      * Поиск city_id по переданному пункту
      *
-     * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком
+     * заказ не сохраняет идентификатор города, поэтому мы сравниваем id пункта со списком пунктов выдачи по РФ
+     * (пункты выдачи по Спб и МСК не имеют индификатор города)
      *
-     * @param string|bool $punktId
+     * @param string $punktId
+     * @return string статус заказа
      */
     private function findCityId($punktId)
     {
@@ -655,8 +650,6 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 return $st['city_id'];
             }
         }
-
-        return false;
     }
 
     /**
@@ -694,6 +687,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 $status = "На возврат";
                 break;
         }
+
         return $status;
     }
 
@@ -811,8 +805,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             ];
         }
 
-        $cityId = $this->findCityId($punktId);
         if ($info['shipping_code'] === 'glavpunkt.glavpunkt' && $punktId !== null) {
+            $cityId = $this->findCityId($punktId);
             if (!$cityId) {
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
