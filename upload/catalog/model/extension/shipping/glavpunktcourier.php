@@ -183,7 +183,7 @@ EOD;
                             setGetTime();
                         });  
                         //При изменение даты курьерской доставки, проверяет день недели,  
-                        //если восересенье, то прибавлет день
+                        //если воскресенье, то прибавлет день
                         $('#glavpunktcourier_date').change(function() { 
                           var check = new Date($('#glavpunktcourier_date').val());
                           if (check != 'Invalid Date') {
