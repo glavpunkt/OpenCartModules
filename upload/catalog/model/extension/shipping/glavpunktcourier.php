@@ -146,6 +146,14 @@ EOD;
                 $inputs .= <<<EOD
                 <script>
                     $(function(){
+                        function addDays(date) {
+                          var now = new Date(date);
+                          now.setDate(now.getDate() + 1);
+                          var day = ("0" + now.getDate()).slice(-2);
+                          var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                          var result = now.getFullYear()+"-"+(month)+"-"+(day);
+                          return result;
+                        } 
                         function setGetTime()
                         {
                             $.ajax({
@@ -168,8 +176,16 @@ EOD;
                         });
                         $('.glavpunkt-courier').change(function() {
                             setGetTime();
-                        });                         
-                    });
+                        });  
+                        $('#glavpunktcourier_date').change(function() { 
+                          var check = new Date($('#glavpunktcourier_date').val());
+                          if (check != 'Invalid Date') {
+                              if (check.getDay() == 0) {          
+                                $("#glavpunktcourier_date").val(addDays(check));          
+                              }
+                          }   
+                        });  
+                    });                   
                 </script>
 EOD;
             }
