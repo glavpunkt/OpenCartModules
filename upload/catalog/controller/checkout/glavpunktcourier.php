@@ -27,11 +27,14 @@ class ControllerCheckoutGlavpunktCourier extends Controller
         $this->session->data['selected_city'] = $this->request->post['info'];
         $this->session->data['reloaded'] = true;
         $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
-        if ($courierDays < 0){
-            $courierDays = 0;
-            $date = date('Y-m-d');
+        if (!$courierDays) {
+            $date = date('Y-m-d',  strtotime(' + 1 day'));
         } else {
-            $date = date('d.m.Y', strtotime(' + '.$courierDays.' day'));
+            $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+        }
+        $strDate = "Sun " . $date;
+        if ( strftime("%a %Y-%m-%d", strtotime($date)) === $strDate ) {
+            $date = date('Y-m-d',  strtotime($date.' + 1 day'));
         }
         $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'] =
             $this->request->post['type'] . ' <br>' . $this->request->post['info'] .

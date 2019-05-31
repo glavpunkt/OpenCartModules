@@ -12,7 +12,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
 {
     function getQuote($address)
     {
-       $this->language->load('extension/shipping/glavpunktcourier');
+        $this->language->load('extension/shipping/glavpunktcourier');
 
         if ($this->config->get('shipping_glavpunktcourier_status') == 1) {
             $status = true;
@@ -40,12 +40,18 @@ class ModelExtensionShippingGlavpunktcourier extends Model
             }
 
             $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
-            if ($courierDays < 0){
-                $courierDays = 0;
-                $date = date('Y-m-d');
+
+            if (!$courierDays) {
+                $date = date('Y-m-d',  strtotime(' + 1 day'));
             } else {
-                $date= date('Y-m-d', strtotime(' + '.$courierDays.' day'));
-            } 
+                $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+            }
+            $strDate = "Sun " . $date;
+            if ( strftime("%a %Y-%m-%d", strtotime($date)) === $strDate ) {
+                $date = date('Y-m-d',  strtotime($date.' + 1 day'));
+            }
+
+            strftime("%a, %Y-%m-%d", strtotime($date));
 
             if (isset($this->session->data['selected_city'])) {
                 $cityTo = $this->session->data['selected_city'];
@@ -181,7 +187,8 @@ EOD;
                           var check = new Date($('#glavpunktcourier_date').val());
                           if (check != 'Invalid Date') {
                               if (check.getDay() == 0) {          
-                                $("#glavpunktcourier_date").val(addDays(check));          
+                                $("#glavpunktcourier_date").val(addDays(check));
+                                alert("Дата доставки не может быть в воскресенье");
                               }
                           }   
                         });  
