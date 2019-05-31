@@ -52,22 +52,21 @@
             <div class="col-sm-10">
               <input type="text" name="glavpunktcourier_days" value="<?php echo $glavpunktcourier_days; ?>" size="5" />
             </div>
-          </div>
             <div class="col-sm-10">В данном поле укажите колличество дней через которое будет доступна курьерская доставка, по умолчанию - 0</div>
+          </div>
           <div class="form-group">
             <label class="col-sm-2 control-label" >Ваш город:</label>
             <div class="col-sm-10">
               <input type="text" name="glavpunktcourier_home_city" value="<?php echo $glavpunktcourier_home_city; ?>" />
             </div>
-      <div class="col-sm-10">Введите в данное поле город из котрого будут отправлятся заказы на доставку(Санкт-Петербург или Москва по умолчанию - Санкт-Петербург).</div>
-      
+              <div class="col-sm-10">Введите в данное поле город из котрого будут отправлятся заказы на доставку(Санкт-Петербург или Москва по умолчанию - Санкт-Петербург).</div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label" >Вес по умолчанию:</label>
             <div class="col-sm-10">
               <input type="text" name="glavpunktcourier_weight" value="<?php echo $glavpunktcourier_weight; ?>" />
             </div>
-      <div class="col-sm-10">В данном поле укажите вес присваеваемый заказу в случае если он не указан.</div>
+              <div class="col-sm-10">В данном поле укажите вес присваеваемый заказу в случае если он не указан.</div>
           </div>
           <div class="form-group">
             <label class="col-sm-2 control-label" >Код JavaScript для изменения тарифа:</label>
