@@ -40,18 +40,16 @@ class ModelExtensionShippingGlavpunktcourier extends Model
             }
 
             $courierDays = intval($this->config->get('shipping_glavpunktcourier_days'));
-
             if (!$courierDays) {
-                $date = date('Y-m-d',  strtotime(' + 1 day'));
+                $date = date('Y-m-d', strtotime(' + 1 day'));
             } else {
-                $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
-            }
-            $strDate = "Sun " . $date;
-            if ( strftime("%a %Y-%m-%d", strtotime($date)) === $strDate ) {
-                $date = date('Y-m-d',  strtotime($date.' + 1 day'));
+                $date = date('Y-m-d', strtotime(' + ' . $courierDays . ' day'));
             }
 
-            strftime("%a, %Y-%m-%d", strtotime($date));
+            $strToDate = strtotime($date);
+            if (date('w', $strToDate) == 0) {
+                $date = date('Y-m-d', strtotime($date . ' + 1 weekdays'));
+            }
 
             if (isset($this->session->data['selected_city'])) {
                 $cityTo = $this->session->data['selected_city'];
@@ -150,8 +148,9 @@ class ModelExtensionShippingGlavpunktcourier extends Model
 EOD;
                 $linkForAjax = $this->url->link("checkout/glavpunktcourier/setcomment", '');
                 $inputs .= <<<EOD
-                <script>
+                <script>            
                     $(function(){
+                        //Прибавляет день к выбранной дате  
                         function addDays(date) {
                           var now = new Date(date);
                           now.setDate(now.getDate() + 1);
@@ -183,6 +182,8 @@ EOD;
                         $('.glavpunkt-courier').change(function() {
                             setGetTime();
                         });  
+                        //При изменение даты курьерской доставки, проверяет день недели,  
+                        //если восересенье, то прибавлет день
                         $('#glavpunktcourier_date').change(function() { 
                           var check = new Date($('#glavpunktcourier_date').val());
                           if (check != 'Invalid Date') {
