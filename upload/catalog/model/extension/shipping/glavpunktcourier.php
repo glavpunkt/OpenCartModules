@@ -46,11 +46,14 @@ class ModelExtensionShippingGlavpunktcourier extends Model
             }
 
             $courierDays = intval($this->config->get('glavpunktcourier_days'));
-            if ($courierDays < 0){
-                $courierDays = 0;
-                $date = date('Y-m-d');
+            if (!$courierDays) {
+                $date = date('Y-m-d', strtotime(' + 1 day'));
             } else {
-                $date = date('Y-m-d', strtotime(' + '.$courierDays.' day'));
+                $date = date('Y-m-d', strtotime(' + ' . $courierDays . ' day'));
+            }
+            $strToDate = strtotime($date);
+            if (date('w', $strToDate) == 0) {
+                $date = date('Y-m-d', strtotime($date . ' + 1 weekdays'));
             }
 
             if (null !== $this->config->get('glavpunktcourier_tarif_edit_code')) {
@@ -152,6 +155,15 @@ EOD;
                 $inputs .= <<<EOD
                 <script>
                     $(function(){
+                        //Прибавляет день к выбранной дате  
+                        function addDays(date) {
+                          var now = new Date(date);
+                          now.setDate(now.getDate() + 1);
+                          var day = ("0" + now.getDate()).slice(-2);
+                          var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                          var result = now.getFullYear()+"-"+(month)+"-"+(day);
+                          return result;
+                        } 
                         function setGetTime()
                         {
                             $.ajax({
@@ -174,7 +186,18 @@ EOD;
                         });
                         $('.glavpunkt-courier').change(function() {
                             setGetTime();
-                        });                         
+                        });
+                        //При изменение даты курьерской доставки, проверяет день недели,  
+                        //если воскресенье, то прибавлет день
+                        $('#glavpunktcourier_date').change(function() { 
+                          var check = new Date($('#glavpunktcourier_date').val());
+                          if (check != 'Invalid Date') {
+                              if (check.getDay() == 0) {          
+                                $("#glavpunktcourier_date").val(addDays(check));
+                                alert("Дата доставки не может быть в воскресенье");
+                              }
+                          }   
+                        });  
                     });
                 </script>
 EOD;
