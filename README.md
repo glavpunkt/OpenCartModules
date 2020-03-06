@@ -1,4 +1,4 @@
-# OpenCard
+# OpenCart
 
 Шаблон отображения службы доставки самовывоз находится по пути public_html => catalog => view => theme => default => template => checkout => simplecheckout_shipping.tpl
  
