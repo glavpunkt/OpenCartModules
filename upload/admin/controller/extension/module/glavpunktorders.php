@@ -19,7 +19,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     private $isHttps;
 
     /**
-     * Метод исполняемый при вызове данного контроллера
+     * Метод исполняемый при вызове данного контроллера 
      */
     public function index()
     {
