@@ -724,15 +724,19 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
+        $this->load->model('catalog/product'); // new weight code
+        $order_weight = 0.0; // new weight code
+
         $parts = [];
         // получаем номенклатуру заказа
         foreach ($items as $item) {
+            $order_weight += abs( $this->model_catalog_product->getProduct($item['product_id'])['weight'] ); // new weight code
+
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
                 'price' => $item['total'],
                 'barcode' => '',
                 'num' => $item['quantity']
-
             ];
         }
         // получаем общие параметры заказа
@@ -744,7 +748,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             'buyer_fio' => $info['shipping_firstname'] . " " . $info['shipping_lastname'],
             'buyer_phone' => $info['telephone'],
             'is_prepaid' => 0,
-            'weight' => 1,
+            'weight' => $order_weight,
             'parts' => $parts
         ];
         // тут исходя из кода доставки мы заполняем нужные поля
