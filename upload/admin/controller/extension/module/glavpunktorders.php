@@ -726,28 +726,42 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     {
         $this->load->model('catalog/product'); // new weight code
         $order_weight = 0.0; // new weight code
+        $price = 0;
+        $insuranceVal = 0;
+        $delivPrice = 0;
 
         $parts = [];
         // получаем номенклатуру заказа
         foreach ($items as $item) {
             $order_weight += abs( $this->model_catalog_product->getProduct($item['product_id'])['weight'] ); // new weight code
 
+            $price += $item['total'];
+            $insuranceVal += $item['total'];
+
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
                 'price' => $item['total'],
+                'insurance_val' => $item['total'],
                 'barcode' => '',
                 'num' => $item['quantity']
             ];
         }
+
+        if ($delivPrice > 0) {
+            $parts[] = [
+                'name' => 'Стоимость доставки',
+                'price' => $delivPrice
+            ];
+        }
+
         // получаем общие параметры заказа
         $thisOrder = [
             'sku' => $info['order_id'],
-            'price' => $info['total'],
-            'client_delivery_price' => "",
+            'price' => $price,//$info['total'],
+            'insurance_val' => $insuranceVal,
             'comment' => $info['comment'],
             'buyer_fio' => $info['shipping_firstname'] . " " . $info['shipping_lastname'],
             'buyer_phone' => $info['telephone'],
-            'is_prepaid' => 0,
             'weight' => $order_weight,
             'parts' => $parts
         ];
