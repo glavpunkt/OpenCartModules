@@ -724,47 +724,46 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
-        $this->load->model('catalog/product'); // new weight code
-        $order_weight = 0.0; // new weight code
-        $price = 0;
-        $insuranceVal = 0;
-        $delivPrice = 0;
+        $this->load->model('catalog/product');
+        $order_weight = 0;
+        $products_price = 0;
 
         $parts = [];
         // получаем номенклатуру заказа
         foreach ($items as $item) {
-            $order_weight += abs( $this->model_catalog_product->getProduct($item['product_id'])['weight'] ); // new weight code
-
-            $price += $item['total'];
-            $insuranceVal += $item['total'];
+            $order_weight += abs( $this->model_catalog_product->getProduct($item['product_id'])['weight'] );
+            $products_price += $this->model_catalog_product->getProduct($item['product_id'])['price'];
 
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
                 'price' => $item['total'],
-                'insurance_val' => $item['total'],
                 'barcode' => '',
+                'insurance_val' => $item['total'],
                 'num' => $item['quantity']
             ];
         }
 
+        $delivPrice = $info['total'] - $products_price;
         if ($delivPrice > 0) {
             $parts[] = [
                 'name' => 'Стоимость доставки',
-                'price' => $delivPrice
+                'price' => $info['total'] - $products_price,
+                'insurance_val' => 0
             ];
         }
 
         // получаем общие параметры заказа
         $thisOrder = [
             'sku' => $info['order_id'],
-            'price' => $price,//$info['total'],
-            'insurance_val' => $insuranceVal,
+            'price' => $info['total'],
+            'insurance_val' => $products_price,
             'comment' => $info['comment'],
             'buyer_fio' => $info['shipping_firstname'] . " " . $info['shipping_lastname'],
             'buyer_phone' => $info['telephone'],
             'weight' => $order_weight,
-            'parts' => $parts
+            'parts' => $parts,
         ];
+
         // тут исходя из кода доставки мы заполняем нужные поля
         if ($info['shipping_code'] === 'glavpunktcourier.glavpunktcourier') {
             $delivery_date = '';
