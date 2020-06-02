@@ -737,7 +737,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
-                'price' => $this->model_catalog_product->getProduct($item['product_id'])['price'], // $item['total']
+                'price' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
                 'insurance_val' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
                 'num' => $item['quantity']
             ];
