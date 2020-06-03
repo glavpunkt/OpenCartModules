@@ -669,7 +669,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $answer = curl_exec($curl);
         curl_close($curl);
         $answer = json_decode($answer, true);
-        $status =  implode(",", $answer);
+        $status = implode(",", $answer);
         switch ($status) {
             case 'not found':
                 $status = "Нет в системе главпункт";
@@ -709,7 +709,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $answer = curl_exec($curl);
         curl_close($curl);
         $answer = json_decode($answer, true);
-        $trackUrl =  'https://glavpunkt.ru/t/' . implode(",", $answer);
+        $trackUrl = 'https://glavpunkt.ru/t/' . implode(",", $answer);
+
         return $trackUrl;
     }
 
@@ -724,29 +725,45 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
+        $this->load->model('catalog/product');
+        $order_weight = 0;
+        $products_price = 0;
         $parts = [];
+
         // получаем номенклатуру заказа
         foreach ($items as $item) {
+            $order_weight += abs($this->model_catalog_product->getProduct($item['product_id'])['weight'] * $item['quantity']);
+            $products_price += ($this->model_catalog_product->getProduct($item['product_id'])['price'] * $item['quantity']);
+
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
-                'price' => $item['total'],
-                'barcode' => '',
+                'price' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
+                'insurance_val' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
                 'num' => $item['quantity']
-
             ];
         }
+
+        $delivPrice = $info['total'] - $products_price;
+        if ($delivPrice > 0) {
+            $parts[] = [
+                'name' => 'Стоимость доставки',
+                'price' => $delivPrice,
+                'insurance_val' => 0,
+            ];
+        }
+
         // получаем общие параметры заказа
         $thisOrder = [
             'sku' => $info['order_id'],
             'price' => $info['total'],
-            'client_delivery_price' => "",
+            'insurance_val' => $products_price,
             'comment' => $info['comment'],
             'buyer_fio' => $info['shipping_firstname'] . " " . $info['shipping_lastname'],
             'buyer_phone' => $info['telephone'],
-            'is_prepaid' => 0,
-            'weight' => 1,
-            'parts' => $parts
+            'weight' => $order_weight,
+            'parts' => $parts,
         ];
+
         // тут исходя из кода доставки мы заполняем нужные поля
         if ($info['shipping_code'] === 'glavpunktcourier.glavpunktcourier') {
             $delivery_date = '';
@@ -811,12 +828,13 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                 // Выполнение условия если выбрана доставка "выдача"
                 $thisOrder['serv'] = 'выдача';
                 $thisOrder['dst_punkt_id'] = $punktId;
-
             } else {
                 //Выполнение условия если выбрана доставка "выдача по РФ"
                 $thisOrder['serv'] = 'выдача по РФ';
-                $thisOrder['delivery_rf'] = ['pvz_id' => $punktId,
-                    'city_id' => $cityId];
+                $thisOrder['delivery_rf'] = [
+                    'pvz_id' => $punktId,
+                    'city_id' => $cityId
+                ];
             }
         }
 
@@ -840,7 +858,8 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen($requestJson))
+                'Content-Length: ' . strlen($requestJson)
+            )
         );
         $answer = curl_exec($curl);
         curl_close($curl);

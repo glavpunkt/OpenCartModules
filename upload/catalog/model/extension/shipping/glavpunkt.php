@@ -139,8 +139,8 @@ EOD;
             $quote_text .= '<script type="text/javascript">            
             function serPunktsPriceWithFix(price, city){
                 var data = {
-                    "Санкт-Петербург": "' . $this->config->get('shipping_glavpunkt_price_spb') . '",                    
-                    "Москва": "' . $this->config->get('shipping_glavpunkt_price_msk') . '"
+                    "Санкт-Петербург": "' . trim($this->config->get('shipping_glavpunkt_price_spb')) . '",                    
+                    "Москва": "' . trim($this->config->get('shipping_glavpunkt_price_msk')) . '"
                 };
                 if ( data[city] ){
                     return data[city];
