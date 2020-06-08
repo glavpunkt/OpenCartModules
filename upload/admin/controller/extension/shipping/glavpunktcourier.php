@@ -154,6 +154,12 @@ class ControllerExtensionShippingGlavpunktcourier extends Controller
             $data['glavpunktcourier_days'] = $this->config->get('shipping_glavpunktcourier_days');
         }
 
+        if (isset($this->request->post['shipping_glavpunktcourier_hidedate'])) {
+            $data['glavpunktcourier_hidedate'] = $this->request->post['shipping_glavpunktcourier_hidedate'];
+        } else {
+            $data['glavpunktcourier_hidedate'] = $this->config->get('shipping_glavpunktcourier_hidedate');
+        }
+
         if (isset($this->request->post['shipping_glavpunktcourier_price_spb'])) {
             $data['glavpunktcourier_price_spb'] = $this->request->post['shipping_glavpunktcourier_price_spb'];
         } else {
