@@ -79,9 +79,9 @@
                                 <label class="control-label" for="punkt_id">
                                     {{ form_punkt_id_title }}
                                 </label>
-                                <select name="punkt_id" id="punkt_id" class="form-control">
+                                <select name="module_glavpunktorders_punkt_id" id="punkt_id" class="form-control">
                                     {% for point in priem_pvz %}
-                                    <option value="{{ point['id'] }}">
+                                    <option value="{{ point['id'] }}" {% if point['id'] == form_punkt_id_value %} selected="selected"{% endif %}>
                                         {{ point['metro'] }} ({{ point['city'] }})
                                     </option>
                                     {% endfor %}

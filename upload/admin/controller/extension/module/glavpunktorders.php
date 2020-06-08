@@ -80,7 +80,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     // список заказов
                     'orders' => $orderListToGP,
                     // Пункт отгрузки заказов, если вы сами привозите их на ПВЗ
-                    'punkt_id' => $this->request->post['punkt_id'],
+                    'punkt_id' => $this->request->post['module_glavpunktorders_punkt_id'],
                     // комментарий к накладной
                     'comments_client' => $this->request->post['comments_client'],
                     // Если нужен забор заказов, передайте в этом поле 1 (Отменяет параметр punkt_id!)
@@ -127,6 +127,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         $this->data['form_token_value'] = $this->config->get('module_glavpunktorders_token') !== ''
             ? $this->config->get('module_glavpunktorders_token')
             : '';
+        $this->data['form_punkt_id_value'] = $this->config->get('module_glavpunktorders_punkt_id');
         $this->data['form_punkt_id_title'] = $this->language->get('form_punkt_id_title');
         $this->data['form_comments_client_title'] = $this->language->get('form_comments_client_title');
         $this->data['form_comments_client_placeholder'] = $this->language->get('form_comments_client_placeholder');
@@ -737,7 +738,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
-                'price' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
+                'price' => $this->model_catalog_product->getProduct($item['product_id'])['price'], // $item['total']
                 'insurance_val' => $this->model_catalog_product->getProduct($item['product_id'])['price'],
                 'num' => $item['quantity']
             ];
@@ -806,6 +807,13 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
                     $delivery_time = $timeMatch[1][0];
                 }
             }
+
+            if ((bool)$this->config->get('shipping_glavpunktcourier_hidedate')) {
+                // Если дата доставки выключена в настройках, то добавим 2 рабочих дня к дате
+                $delivery_date = (new DateTime('2 weekdays'))->format('Y-m-d');
+                $delivery_time = '10:00 - 18:00';
+            }
+
             $thisOrder['serv'] = 'курьерская доставка';
             $thisOrder['delivery'] = [
                 'city' => $info['shipping_city'],

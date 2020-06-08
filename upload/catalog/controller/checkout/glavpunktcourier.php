@@ -36,10 +36,16 @@ class ControllerCheckoutGlavpunktCourier extends Controller
         if (date('w', $strToDate) == 0) {
             $date = date('d.m.Y', strtotime($date . ' + 1 weekdays'));
         }
-        $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'] =
-            $this->request->post['type'] . ' <br>' . $this->request->post['info'] .
+
+        $courDateTime =
             '<br>Дата доставки: ' . $date .
-            '<br>Время доставки: ' . "10:00 - 18:00";
+            '<br>Время доставки: 10:00 - 18:00';
+        if ((bool)$this->config->get('shipping_glavpunktcourier_hidedate')) {
+            $courDateTime = '';
+        }
+
+        $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'] =
+            $this->request->post['type'] . ' <br>' . $this->request->post['info'] . $courDateTime;
         echo $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'];
 
         exit;
@@ -53,10 +59,17 @@ class ControllerCheckoutGlavpunktCourier extends Controller
     public function setcomment()
     {
         $this->language->load('shipping/glavpunktcourier');
+
+        if ((bool)$this->config->get('shipping_glavpunktcourier_hidedate')) {
+            $courDateTime = '';
+        } else {
+            $courDateTime =
+                '<br>Дата доставки: ' . date('d.m.Y', strtotime($this->request->post['date'])) .
+                '<br>Время доставки: ' . $this->request->post['time'];
+        }
+
         $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'] =
-            $this->request->post['type'] . ' <br>' . $this->request->post['info'] .
-            '<br>Дата доставки: ' . date('d.m.Y', strtotime($this->request->post['date'])) .
-            '<br>Время доставки: ' . $this->request->post['time'];
+            $this->request->post['type'] . ' <br>' . $this->request->post['info'] . $courDateTime;
         echo $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['title'];
         exit;
     }

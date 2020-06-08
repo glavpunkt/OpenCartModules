@@ -133,10 +133,12 @@ class ModelExtensionShippingGlavpunktcourier extends Model
         });
         </script>';
 
-
-            // если установлен модуль Simple то мы не будем выводить дополнительные поля
-            // т.к. они замечательно выводятся в самом модуле
             if ($this->config->get('shipping_glavpunktcourier_simple_status') == 1) {
+                // если установлен модуль Simple то мы не будем выводить дополнительные поля
+                // т.к. они замечательно выводятся в самом модуле
+                $inputs = '';
+            } elseif ((bool)$this->config->get('shipping_glavpunktcourier_hidedate')) {
+                // Если дата доставки скрыта в настройках
                 $inputs = '';
             } else {
                 $inputs = <<<EOD
