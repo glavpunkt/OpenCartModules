@@ -23,6 +23,10 @@ class ModelExtensionShippingGlavpunkt extends Model
                 $this->config->get('config_weight_class_id'),
                 'kilogramm'
             );
+
+            if ($weight > 20) {
+                return false;
+            }
         } elseif ($this->config->get('shipping_glavpunktcourier_weight') > 0) {
             $weight = $this->config->get('shipping_glavpunktcourier_weight');
         } else {

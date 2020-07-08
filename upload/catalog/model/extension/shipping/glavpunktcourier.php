@@ -34,7 +34,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
                 } else {
                     $weight = 1;
                 }
-            } elseif ($weight > 10) {
+            } elseif ($weight > 20) {
                 //exit("превышен допустимый вес для данной службы доставки");
                 return false;
             }
