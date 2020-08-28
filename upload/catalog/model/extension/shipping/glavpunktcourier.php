@@ -224,7 +224,7 @@ EOD;
                 $tarif = $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['cost'];
             } else {
                 // Устанавливаем тариф по умолчанию
-                $tarif = 100;
+                $tarif = 90;
             }
 
             $quote_data['glavpunktcourier'] = array(
