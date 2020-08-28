@@ -118,10 +118,8 @@ class ModelExtensionShippingGlavpunktcourier extends Model
               var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);
 
                 ' . $userSettingsCourier . '
-                //$("#glavpunktcourier_price").html(tarif + " р.");
-                
+
                 let priceCont = document.querySelectorAll(".glavpunktcourier_price");
-                
                 for (let i = 0; i < priceCont.length; i++) {
                     priceCont[i].innerHTML = tarif + " р.";
                 }
