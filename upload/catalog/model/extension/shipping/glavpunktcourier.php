@@ -103,7 +103,7 @@ class ModelExtensionShippingGlavpunktcourier extends Model
         }
 
         $(function(){
-          $(\'.glavpunkt-courier\').on(\'change\', function(e){
+          $(\'.glavpunkt-courier\').on(\'change\', function(e, firstload){
             var itemsPrice = ' . $this->cart->getTotal() . ';
             var city_obl = $(e.currentTarget); 
             var cityFrom = "' . $cityFrom . '";
@@ -116,20 +116,34 @@ class ModelExtensionShippingGlavpunktcourier extends Model
               dataType: "json",
               success: function(data){             
               var tarif = serCourierPriceWithFix(data["tarif"], selectedCity);
+
                 ' . $userSettingsCourier . '
-                $("#glavpunktcourier_price").html(tarif + " р.");
+                //$("#glavpunktcourier_price").html(tarif + " р.");
+                
+                let priceCont = document.querySelectorAll(".glavpunktcourier_price");
+                
+                for (let i = 0; i < priceCont.length; i++) {
+                    priceCont[i].innerHTML = tarif + " р.";
+                }
+                
                   $.ajax({
                     url: "' . $this->url->link("checkout/glavpunktcourier/setprice", '') . '",
                     type: "post",
                     data: {price:tarif, type:\'Курьерская доставка Главпункт\', info:city_obl.val()},
                     dataType: \'html\',
                     success: function(html) {
-                     /*location.reload();*/
+                     if (true !== firstload) {
+                       if (typeof reloadAll === "function") {
+                         // Проверка, что reloadAll существует (режим модуля simple)
+                         reloadAll();
+                       }
+                     }
                     }
                   });
                 }
               });
-          }).trigger("change");
+          }).trigger("change", [true]);
+          
         });
         </script>';
 
@@ -210,7 +224,7 @@ EOD;
                 $tarif = $this->session->data['shipping_methods']['glavpunktcourier']['quote']['glavpunktcourier']['cost'];
             } else {
                 // Устанавливаем тариф по умолчанию
-                $tarif = 90;
+                $tarif = 100;
             }
 
             $quote_data['glavpunktcourier'] = array(
@@ -218,7 +232,7 @@ EOD;
                 'title' => $title_text,
                 'cost' => $tarif,
                 'tax_class_id' => 0,
-                'text' => $selectCities . '<span id="glavpunktcourier_price">' .
+                'text' => $selectCities . '<span class="glavpunktcourier_price">' .
                     $tarif . ' ' . $this->session->data['currency'] . '</span>' .
                     $inputs
             );
