@@ -98,7 +98,7 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                     ';
                 // если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
                 if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1) {
-                    $jsCode .= 'if (!firstCall) {
+                    $jsCode .= 'if (typeof reloadAll === "function") {
                                 reloadAll();
                             }';
                 }
@@ -106,13 +106,6 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                     });
                     ';
                 $jsCode .= '})';
-                // если установлен симпл, нам потребуется передать параметр, т.к 1 вызов trigger выполнится при загрузке страницы,
-                // нас будет интересовать второй, для вызова reloadAll();, иначе получим бесконечную перезагрузку
-                if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1) {
-                    $jsCode .= '.trigger("change", ["true"]);';
-                } else {
-                    $jsCode .= '.trigger("change");';
-                }
                 $jsCode .= '
                         </script>';
                 $text = $fullAddress . '</br><span id="glavpunktpochta_price">' . $cost . ' ' .
