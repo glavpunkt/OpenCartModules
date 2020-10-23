@@ -97,9 +97,9 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                             $("#glavpunktpochta_price").html(tarif + " р.");
                     ';
                 // если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
-                if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1) {
+                if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1 && !isset($this->session->data['gppochtarfreloaded'])) {
                     $jsCode .= '
-                                //reloadAll();
+                                reloadAll();
                             ';
                 }
                 $jsCode .= '}
