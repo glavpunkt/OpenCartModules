@@ -88,7 +88,6 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                 ' . $userSettingsPochta . '
                 ';
                 $jsCode .= '
-                function getPchtTarif(firstCall) {
                     $.ajax({
                         url: "' . $this->url->link("checkout/glavpunktpochta/setprice", '') . '",
                         type: "post",
@@ -99,15 +98,12 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                     ';
                 // если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
                 if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1) {
-                    $jsCode .= 'if (!firstCall && typeof reloadAll === "function") {
+                    $jsCode .= 'if (typeof reloadAll === "function") {
                                 reloadAll();
                             }';
                 }
                 $jsCode .= '}
                     });
-                    }
-                    
-                    getPchtTarif(true);
                     ';
                 $jsCode .= '})';
                 $jsCode .= '
