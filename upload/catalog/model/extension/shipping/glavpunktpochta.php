@@ -98,9 +98,9 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                     ';
                 // если установлен симпл, нам потребуется вызов метода reloadAll(); для обновления измененных данных
                 if ($this->config->get('shipping_glavpunktpochta_simple_status') == 1) {
-                    $jsCode .= 'if (typeof reloadAll === "function") {
-                                reloadAll();
-                            }';
+                    $jsCode .= '
+                                //reloadAll();
+                            ';
                 }
                 $jsCode .= '}
                     });
@@ -113,11 +113,11 @@ class ModelExtensionShippingGlavpunktpochta extends Model
                 if (isset($this->session->data['gppochtarfreloaded']) && $this->session->data['gppochtarfreloaded'] == true) {
                     if (isset($this->session->data['shipping_methods'])) {
                         $title_text = $this->session->data['shipping_methods']['glavpunktpochta']['quote']['glavpunktpochta']['title'];
-                        $text = '<span id="glavpunktpochta_price">' . $cost . ' ' .
-                            " р." . '</span>' . $jsCode;
                         if (isset($this->session->data['shipping_methods']['glavpunktpochta']['quote']['glavpunktpochta']['cost'])) {
                             $cost = $this->session->data['shipping_methods']['glavpunktpochta']['quote']['glavpunktpochta']['cost'];
                         }
+                        $text = '<span id="glavpunktpochta_price">' . $cost . ' ' .
+                            " р." . '</span>' . $jsCode;
                     }
                   }
             } else {
