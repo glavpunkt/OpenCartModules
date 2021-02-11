@@ -2,71 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cbfb008f-ceac-4c05-8ada-41a8ac1a25e4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/OpenCartModules.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/upload/admin/controller/module/glavpunktorders.php" beforeDir="false" afterPath="$PROJECT_DIR$/upload/admin/controller/module/glavpunktorders.php" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/upload/admin/controller/module/glavpunktorders.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="30" column="10" selection-start-line="30" selection-start-column="10" selection-end-line="30" selection-end-column="10" />
-              <folding>
-                <element signature="e#10530#10617#0#PHP" />
-                <element signature="n#validate#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#10699#10879#0#PHP" />
-                <element signature="n#getOrdersList#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#24512#24768#0#PHP" />
-                <element signature="n#getPriemkaPVZ#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#25116#25458#0#PHP" />
-                <element signature="n#getPVZ#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#25840#26135#0#PHP" />
-                <element signature="n#getPVZfromRussia#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#26530#26771#0#PHP" />
-                <element signature="n#findPoint#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#28468#28695#0#PHP" />
-                <element signature="n#ComposeOrder#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-                <element signature="e#32447#32618#0#PHP" />
-                <element signature="n#CreateInvoice#0;n#ControllerModuleGlavpunktorders#0;n#!!top" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upload/admin/controller/shipping/glavpunkt.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="23" column="9" lean-forward="true" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upload/admin/controller/shipping/glavpunktcourier.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="24" column="9" lean-forward="true" selection-start-line="24" selection-start-column="9" selection-end-line="24" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/upload/admin/controller/shipping/glavpunktpochta.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="396">
-              <caret line="22" column="39" selection-start-line="22" selection-start-column="39" selection-end-line="22" selection-end-column="39" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+  <component name="ComposerSettings">
+    <execution />
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -228,18 +176,6 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
