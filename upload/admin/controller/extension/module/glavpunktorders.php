@@ -791,7 +791,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
         foreach ($items as $item) {
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
-                'price' => $item['total'],
+                'price' => $item['price'],
                 'barcode' => '',
                 'num' => $item['quantity']
             ];
