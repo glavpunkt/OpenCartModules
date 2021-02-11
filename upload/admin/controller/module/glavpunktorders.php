@@ -787,14 +787,27 @@ class ControllerModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
+        $productsPrice = 0;
         $parts = [];
+
         // получаем номенклатуру заказа
         foreach ($items as $item) {
+            $productsPrice += $item['price'] * $item['quantity'];
+
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
-                'price' => $item['total'],
+                'price' => $item['price'],
                 'barcode' => '',
                 'num' => $item['quantity']
+            ];
+        }
+
+        $delivPrice = $info['total'] - $productsPrice;
+        if ($delivPrice > 0) {
+            $parts[] = [
+                'name' => 'Стоимость доставки',
+                'price' => $delivPrice,
+                'insurance_val' => 0,
             ];
         }
 
