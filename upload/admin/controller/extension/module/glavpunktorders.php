@@ -786,7 +786,6 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
      */
     private function ComposeOrder($info, $items, $punktId = null)
     {
-        $this->load->model('catalog/product');
         $productsPrice = 0;
         $parts = [];
 
