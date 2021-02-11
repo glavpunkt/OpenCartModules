@@ -792,7 +792,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
 
         // получаем номенклатуру заказа
         foreach ($items as $item) {
-            $productsPrice += ($this->model_catalog_product->getProduct($item['product_id'])['price'] * $item['quantity']);
+            $productsPrice = $item['price'];
 
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
