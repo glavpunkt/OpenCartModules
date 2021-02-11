@@ -787,14 +787,12 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
     private function ComposeOrder($info, $items, $punktId = null)
     {
         $this->load->model('catalog/product');
-        $products_price = 0;
+        $productsPrice = 0;
         $parts = [];
 
         // получаем номенклатуру заказа
         foreach ($items as $item) {
-            $products_price += ($this->model_catalog_product->getProduct($item['product_id'])['price'] * $item['quantity']);
-
-
+            $productsPrice += ($this->model_catalog_product->getProduct($item['product_id'])['price'] * $item['quantity']);
 
             $parts[] = [
                 'name' => $item['name'] . " " . $item['model'],
@@ -804,7 +802,7 @@ class ControllerExtensionModuleGlavpunktorders extends Controller
             ];
         }
 
-        $delivPrice = $info['total'] - $products_price;
+        $delivPrice = $info['total'] - $productsPrice;
         if ($delivPrice > 0) {
             $parts[] = [
                 'name' => 'Стоимость доставки',
